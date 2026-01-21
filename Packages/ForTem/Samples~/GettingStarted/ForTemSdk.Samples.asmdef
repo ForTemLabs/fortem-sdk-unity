@@ -1,0 +1,16 @@
+{
+    "name": "ForTemSdk.Samples",
+    "rootNamespace": "ForTemSdk.Samples",
+    "references": [
+        "GUID:93b88bff6001fe74fabcc54a5b5958ac"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

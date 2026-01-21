@@ -1,0 +1,31 @@
+{
+  "name": "com.fortem.core",
+  "version": "0.1.0",
+  "displayName": "ForTem Core",
+  "description": "Core package for ForTem framework",
+  "unity": "2022.2",
+  "author": {
+    "name": "ForTem",
+    "email": "support@fortem.dev",
+    "url": "https://fortem.dev"
+  },
+  "keywords": [
+    "framework",
+    "utility",
+    "tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fortem/unity.git",
+    "revision": "main"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Getting Started",
+      "description": "Basic example to get started with ForTem Core",
+      "path": "Samples~/GettingStarted"
+    }
+  ]
+}
