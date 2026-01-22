@@ -12,6 +12,7 @@ namespace ForTemSdk
     {
         public int statusCode;
         public T data;
+        //"metadata":{"pagination":{"totalItems":1}}
     }
 
     /// <summary>
@@ -36,17 +37,61 @@ namespace ForTemSdk
     [Serializable]
     public class CreateCollectionRequest
     {
+        // TODO: Underscore naming convention is these stay private
         [SerializeField] private string name;
         [SerializeField] private string description;
+        [SerializeField] private Link link;
 
-        public CreateCollectionRequest(string collectionName, string collectionDescription)
+        public CreateCollectionRequest(string collectionName, string collectionDescription, Link link = null)
         {
             name = collectionName;
             description = collectionDescription;
+            this.link = link;
         }
 
         public string Name => name;
         public string Description => description;
+        public Link Link => link;
+    }
+
+    /// <summary>
+    /// Request to create a collection item.
+    /// </summary>
+    [System.Serializable]
+    public class CreateCollectionItemRequest
+    {
+        [SerializeField] private string name;
+        [SerializeField] private int quantity;
+        [SerializeField] private string redeemCode;
+        [SerializeField] private string redeemUrl;
+        [SerializeField] private string description;
+        [SerializeField] private string itemImage;
+        [SerializeField] private List<ItemAttribute> attributes;
+
+        /// <summary>
+        /// Recipient wallet address for minting the item (ForTem user only; required).
+        /// </summary>
+        [SerializeField] private string recipientAddress;
+
+        public CreateCollectionItemRequest(
+            string itemName,
+            int itemQuantity,
+            string itemRedeemCode,
+            string itemRedeemUrl = "",
+            string itemDescription = "",
+            string itemImageCid = "",
+            List<ItemAttribute> itemAttributes = null,
+            string itemRecipientAddress = "")
+        {
+            name = itemName;
+            quantity = itemQuantity;
+            redeemCode = itemRedeemCode;
+            redeemUrl = itemRedeemUrl;
+            description = itemDescription;
+            itemImage = itemImageCid;
+            attributes = itemAttributes;
+            recipientAddress = itemRecipientAddress;
+        }
     }
 
     /// <summary>
@@ -76,6 +121,10 @@ namespace ForTemSdk
     {
         [SerializeField] private bool isUser;
         [SerializeField] private string nickname;
+
+        /// <summary>
+        /// Default: profile/default.png
+        /// </summary>
         [SerializeField] private string profileImage;
         [SerializeField] private string walletAddress;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace ForTemSdk
 
         private sealed class CacheEntry
         {
-            public string Data { get; set; }
+            public object ParsedData { get; set; }
             public DateTime ExpiryTime { get; set; }
 
             public bool IsExpired => DateTime.UtcNow > ExpiryTime;
@@ -39,12 +40,14 @@ namespace ForTemSdk
         /// <summary>
         /// Sends an async HTTP request with caching support for GET requests.
         /// </summary>
-        public async Task<string> SendRequestAsync(
+        public async Task<T> SendRequestAsync<T>(
             string endpoint,
             System.Net.Http.HttpMethod method,
             string body = null,
+            byte[] bodyBytes = null,
             Dictionary<string, string> customHeaders = null,
             bool useCache = true)
+            where T : class
         {
             string url = $"{endpoint}"; // Using endpoint as part of cache key
             string cacheKey = $"{method}:{url}";
@@ -59,7 +62,7 @@ namespace ForTemSdk
                         Debug.Log($"[ForTem] Cache hit: {endpoint}");
                     }
 
-                    return cached.Data;
+                    return cached.ParsedData as T;
                 }
                 else
                 {
@@ -68,14 +71,14 @@ namespace ForTemSdk
             }
 
             // Delegate to inner client
-            var response = await _innerClient.SendRequestAsync(endpoint, method, body, customHeaders, useCache: false);
+            var response = await _innerClient.SendRequestAsync<T>(endpoint, method, body, bodyBytes, customHeaders, useCache: false);
 
             // Cache successful GET responses
             if (useCache && method == System.Net.Http.HttpMethod.Get)
             {
                 _responseCache[cacheKey] = new CacheEntry
                 {
-                    Data = response,
+                    ParsedData = response,
                     ExpiryTime = DateTime.UtcNow.AddSeconds(CACHE_DURATION_SECONDS)
                 };
             }
@@ -87,14 +90,15 @@ namespace ForTemSdk
         /// Sends an async multipart form data request for file uploads.
         /// File uploads are not cached.
         /// </summary>
-        public async Task<string> SendRequestMultipartAsync(
+        public async Task<T> SendRequestMultipartAsync<T>(
             string endpoint,
             byte[] fileData,
             string fieldName = "file",
             Dictionary<string, string> customHeaders = null)
+            where T : class
         {
             // Delegate to inner client - file uploads are not cached
-            return await _innerClient.SendRequestMultipartAsync(endpoint, fileData, fieldName, customHeaders);
+            return await _innerClient.SendRequestMultipartAsync<T>(endpoint, fileData, fieldName, customHeaders);
         }
 
         /// <summary>
@@ -118,3 +122,4 @@ namespace ForTemSdk
         }
     }
 }
+

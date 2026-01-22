@@ -1,0 +1,22 @@
+{
+    "statusCode": 400,
+    "timestamp": "2026-01-21T04:08:01.258Z",
+    "path": "/api/v1/developers/collections/86/items",
+    "method": "POST",
+    "message": "name must be shorter than or equal to 40 characters,name must be a string,name should not be empty, quantity must be a positive number,quantity must be a number conforming to the specified constraints,quantity should not be empty, Redeem code must not contain any whitespace characters,redeemCode must be a string,redeemCode should not be empty, description must be shorter than or equal to 1000 characters,description must be a string,description should not be empty, attributes must be an array, recipientAddress must be a string,recipientAddress should not be empty"
+}
+- name must be shorter than or equal to 40 characters
+- name must be a string
+- name should not be empty
+- quantity must be a positive number
+- quantity must be a number conforming to the specified constraints
+- quantity should not be empty
+- Redeem code must not contain any whitespace characters
+- redeemCode must be a string
+- redeemCode should not be empty
+- description must be shorter than or equal to 1000 characters
+- description must be a string
+- description should not be empty
+- attributes must be an array
+- recipientAddress must be a string
+- recipientAddress should not be empty
