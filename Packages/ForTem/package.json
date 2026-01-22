@@ -1,13 +1,13 @@
 {
-  "name": "com.fortem.core",
+  "name": "com.fortem-sdk.core",
   "version": "0.1.0",
-  "displayName": "ForTem Core",
-  "description": "Core package for ForTem framework",
+  "displayName": "ForTem SDK",
+  "description": "C# wrapper around the ForTem backend API to facilitate easy integration with Unity projects.",
   "unity": "2022.2",
   "author": {
     "name": "ForTem",
-    "email": "support@fortem.dev",
-    "url": "https://fortem.dev"
+    "email": "colt@fortemlabs.com",
+    "url": "https://docs.fortem.gg"
   },
   "keywords": [
     "framework",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/fortem/unity.git",
+    "url": "https://github.com/ForTemLabs/fortem-sdk.git",
     "revision": "main"
   },
   "license": "MIT",
@@ -24,7 +24,7 @@
   "samples": [
     {
       "displayName": "Getting Started",
-      "description": "Basic example to get started with ForTem Core",
+      "description": "Basic example to get started with ForTem SDK",
       "path": "Samples~/GettingStarted"
     }
   ]
