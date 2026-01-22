@@ -16,9 +16,9 @@ namespace ForTemSdk
     public sealed class ForTemHttpClientAsyncUnityWebRequest : IForTemHttpClientAsync
     {
         private readonly ForTemConfig _config;
-        private readonly ForTemClient _client;
+        private readonly ForTemClientAsync _client;
 
-        public ForTemHttpClientAsyncUnityWebRequest(ForTemConfig config, ForTemClient client = null)
+        public ForTemHttpClientAsyncUnityWebRequest(ForTemConfig config, ForTemClientAsync client = null)
         {
             _config = config;
             _client = client;
@@ -26,17 +26,20 @@ namespace ForTemSdk
 
         /// <summary>
         /// Sends an async HTTP request to the ForTem API using UnityWebRequest with await.
+        /// Parses the response into the specified type.
         /// </summary>
-        public async Task<string> SendRequestAsync(
+        public async Task<T> SendRequestAsync<T>(
             string endpoint,
             System.Net.Http.HttpMethod method,
             string body = null,
+            byte[] bodyBytes = null,
             Dictionary<string, string> customHeaders = null,
             bool useCache = true)
+            where T : class
         {
             string url = $"{_config.GetApiBaseUrl()}{endpoint}";
 
-            using UnityWebRequest request = CreateWebRequest(url, method, body, customHeaders);
+            using UnityWebRequest request = CreateWebRequest(url, method, body, bodyBytes, customHeaders);
 
             if (_config.DebugLogging)
             {
@@ -55,7 +58,7 @@ namespace ForTemSdk
                     Debug.Log($"[ForTem] Response: {responseText}");
                 }
 
-                return responseText;
+                return ParseResponse<T>(responseText);
             }
             else
             {
@@ -73,64 +76,38 @@ namespace ForTemSdk
 
         /// <summary>
         /// Sends an async multipart form data request for file uploads.
+        /// Parses the response into the specified type.
         /// </summary>
-        public async Task<string> SendRequestMultipartAsync(
+        public async Task<T> SendRequestMultipartAsync<T>(
             string endpoint,
             byte[] fileData,
             string fieldName = "file",
             Dictionary<string, string> customHeaders = null)
+            where T : class
         {
             string url = $"{_config.GetApiBaseUrl()}{endpoint}";
 
-            using UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
-
-            // Create multipart form data
-            byte[] boundary = Encoding.ASCII.GetBytes("----WebKitFormBoundary7MA4YWxkTrZu0gW");
-            byte[] boundaryDashes = Encoding.ASCII.GetBytes("--");
-            byte[] crlf = Encoding.ASCII.GetBytes("\r\n");
-
-            var formData = new List<byte>();
-
-            // Add boundary and field headers
-            formData.AddRange(boundaryDashes);
-            formData.AddRange(boundary);
-            formData.AddRange(crlf);
-            formData.AddRange(Encoding.ASCII.GetBytes($"Content-Disposition: form-data; name=\"{fieldName}\"; filename=\"image.png\"\r\n"));
-            formData.AddRange(Encoding.ASCII.GetBytes("Content-Type: image/png\r\n\r\n"));
-
-            // Add file data
-            formData.AddRange(fileData);
-            formData.AddRange(crlf);
-
-            // Add closing boundary
-            formData.AddRange(boundaryDashes);
-            formData.AddRange(boundary);
-            formData.AddRange(boundaryDashes);
-            formData.AddRange(crlf);
-
-            request.uploadHandler = new UploadHandlerRaw(formData.ToArray());
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = _config.TimeoutSeconds;
-
-            // Set headers
-            request.SetRequestHeader("Authorization", $"Bearer {_client?.GetAccessToken() ?? ""}");
-            request.SetRequestHeader("Content-Type", $"multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
-
-            // Add custom headers
-            if (customHeaders != null)
+            // 1. Prepare your form data sections
+            var formData = new List<IMultipartFormSection>
             {
-                foreach (var header in customHeaders)
-                {
-                    request.SetRequestHeader(header.Key, header.Value);
-                }
-            }
+                //new MultipartFormDataSection("user_name", "TestUser"),
+                // string fileName = "example.png";
+                //new MultipartFormFileSection("profile_picture", fileData, fileName, "image/png"),
+                new MultipartFormFileSection("file", fileData, "my-image.jpg", "image/jpeg") // Invalid file type. Allowed types: image/jpeg, image/png, image/webp
+            };
+
+            using UnityWebRequest request = UnityWebRequest.Post(url, formData);
+
+            // 3. Change the request method from POST to PUT
+            request.method = "PUT";
+
+            request.SetRequestHeader("Authorization", $"Bearer {_client?.GetAccessToken() ?? ""}");
 
             if (_config.DebugLogging)
             {
                 Debug.Log($"[ForTem] Uploading file to: {endpoint}");
             }
 
-            // Send request and await the result
             await request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
@@ -141,13 +118,19 @@ namespace ForTemSdk
                 {
                     Debug.Log($"[ForTem] Upload response: {responseText}");
                 }
-
-                return responseText;
+                
+                return ParseResponse<T>(responseText);
             }
             else
             {
                 Debug.LogError($"[ForTem] Upload failed: {request.error}");
-                throw new HttpRequestException($"Upload failed with status code: {request.responseCode}. Error: {request.error}");
+
+                if (!string.IsNullOrEmpty(request.downloadHandler.text))
+                {
+                    Debug.LogError($"[ForTem] Response: {request.downloadHandler.text}");
+                }
+
+                throw new HttpRequestException($"File upload failed with status code: {request.responseCode}. Error: {request.error}");
             }
         }
 
@@ -170,15 +153,45 @@ namespace ForTemSdk
             // No unmanaged resources to dispose
         }
 
+        private T ParseResponse<T>(string responseText) where T : class
+        {
+            if (string.IsNullOrEmpty(responseText))
+            {
+                throw new HttpRequestException("Empty response from server");
+            }
+
+            try
+            {
+                // Parse the standard API response wrapper
+                var apiResponse = JsonUtility.FromJson<ApiResponse<T>>(responseText);
+
+                if (apiResponse.statusCode != 200)
+                {
+                    throw new HttpRequestException($"API returned status code {apiResponse.statusCode}");
+                }
+
+                if (apiResponse.data == null)
+                {
+                    throw new HttpRequestException("API returned null data");
+                }
+
+                return apiResponse.data;
+            }
+            catch (Exception ex) when (!(ex is HttpRequestException))
+            {
+                throw new HttpRequestException($"Failed to parse response: {ex.Message}", ex);
+            }
+        }
+
         private UnityWebRequest CreateWebRequest(
             string url,
             System.Net.Http.HttpMethod method,
             string body,
+            byte[] bodyBytes,
             Dictionary<string, string> customHeaders)
         {
             UnityWebRequest request;
 
-            // Convert System.Net.Http.HttpMethod to UnityWebRequest method string
             if (method == System.Net.Http.HttpMethod.Get)
             {
                 request = UnityWebRequest.Get(url);
@@ -193,20 +206,15 @@ namespace ForTemSdk
             }
             else if (method == System.Net.Http.HttpMethod.Put)
             {
-                request = string.IsNullOrEmpty(body)
-                    ? UnityWebRequest.Put(url, "")
-                    : UnityWebRequest.Put(url, Encoding.UTF8.GetBytes(body));
-            }
-            else if (method == System.Net.Http.HttpMethod.Delete)
-            {
-                request = UnityWebRequest.Delete(url);
-            }
-            else if (method.Method == "PATCH")
-            {
-                request = new UnityWebRequest(url, "PATCH");
-                if (!string.IsNullOrEmpty(body))
+                if (bodyBytes != null)
                 {
-                    request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
+                    request = UnityWebRequest.Put(url, bodyBytes);
+                }
+                else
+                {
+                    request = string.IsNullOrEmpty(body)
+                        ? UnityWebRequest.Put(url, "")
+                        : UnityWebRequest.Put(url, Encoding.UTF8.GetBytes(body));
                 }
             }
             else
@@ -214,14 +222,14 @@ namespace ForTemSdk
                 throw new NotSupportedException($"HTTP method {method.Method} is not supported.");
             }
 
-            request.downloadHandler = new DownloadHandlerBuffer();
+            //request.downloadHandler = new DownloadHandlerBuffer();
             request.timeout = _config.TimeoutSeconds;
 
             // Set default headers
             request.SetRequestHeader("Content-Type", "application/json");
 
             // Add authorization if we have a token
-            if (_client != null && !string.IsNullOrEmpty(_client.GetAccessToken()))
+            if (!string.IsNullOrEmpty(_client.GetAccessToken()))
             {
                 request.SetRequestHeader("Authorization", $"Bearer {_client.GetAccessToken()}");
             }

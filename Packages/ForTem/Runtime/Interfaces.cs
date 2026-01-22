@@ -43,23 +43,26 @@ namespace ForTemSdk
     public interface IForTemHttpClientAsync : IDisposable
     {
         /// <summary>
-        /// Sends an async HTTP request to the ForTem API.
+        /// Sends an async HTTP request to the ForTem API and parses the response.
         /// </summary>
-        Task<string> SendRequestAsync(
+        Task<T> SendRequestAsync<T>(
             string endpoint,
             System.Net.Http.HttpMethod method,
             string body = null,
+            byte[] bodyBytes = null,
             Dictionary<string, string> customHeaders = null,
-            bool useCache = true);
+            bool useCache = true)
+            where T : class;
 
         /// <summary>
-        /// Sends an async multipart form data request for file uploads.
+        /// Sends an async multipart form data request for file uploads and parses the response.
         /// </summary>
-        Task<string> SendRequestMultipartAsync(
+        Task<T> SendRequestMultipartAsync<T>(
             string endpoint,
             byte[] fileData,
             string fieldName = "file",
-            Dictionary<string, string> customHeaders = null);
+            Dictionary<string, string> customHeaders = null)
+            where T : class;
 
         /// <summary>
         /// Clears all cached responses.
