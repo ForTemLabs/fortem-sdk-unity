@@ -8,7 +8,7 @@ namespace ForTemSdk
     /// Standard response wrapper for all ForTem API requests.
     /// </summary>
     [Serializable]
-    public class ApiResponse<T>
+    internal class ApiResponse<T>
     {
         public int statusCode;
         public T data;
@@ -19,16 +19,10 @@ namespace ForTemSdk
     /// Request to exchange nonce for access token.
     /// </summary>
     [Serializable]
-    public class TokenExchangeRequest
+    public class AccessTokenRequest
     {
         [SerializeField] private string nonce;
-
-        public TokenExchangeRequest(string nonceValue)
-        {
-            nonce = nonceValue;
-        }
-
-        public string Nonce => nonce;
+        public string Nonce { get => nonce; set => nonce = value; }
     }
 
     /// <summary>
@@ -37,28 +31,20 @@ namespace ForTemSdk
     [Serializable]
     public class CreateCollectionRequest
     {
-        // TODO: Underscore naming convention is these stay private
         [SerializeField] private string name;
         [SerializeField] private string description;
         [SerializeField] private Link link;
 
-        public CreateCollectionRequest(string collectionName, string collectionDescription, Link link = null)
-        {
-            name = collectionName;
-            description = collectionDescription;
-            this.link = link;
-        }
-
-        public string Name => name;
-        public string Description => description;
-        public Link Link => link;
+        public string Name { get => name; set => name = value; }
+        public string Description { get => description; set => description = value; }
+        public Link Link { get => link; set => link = value; }
     }
 
     /// <summary>
     /// Request to create a collection item.
     /// </summary>
     [System.Serializable]
-    public class CreateCollectionItemRequest
+    public class CreateItemRequest
     {
         [SerializeField] private string name;
         [SerializeField] private int quantity;
@@ -73,41 +59,31 @@ namespace ForTemSdk
         /// </summary>
         [SerializeField] private string recipientAddress;
 
-        public CreateCollectionItemRequest(
-            string itemName,
-            int itemQuantity,
-            string itemRedeemCode,
-            string itemRedeemUrl = "",
-            string itemDescription = "",
-            string itemImageCid = "",
-            List<ItemAttribute> itemAttributes = null,
-            string itemRecipientAddress = "")
-        {
-            name = itemName;
-            quantity = itemQuantity;
-            redeemCode = itemRedeemCode;
-            redeemUrl = itemRedeemUrl;
-            description = itemDescription;
-            itemImage = itemImageCid;
-            attributes = itemAttributes;
-            recipientAddress = itemRecipientAddress;
-        }
+        public string Name { get => name; set => name = value; }
+        public int Quantity { get => quantity; set => quantity = value; }
+        public string RedeemCode { get => redeemCode; set => redeemCode = value; }
+        public string RedeemUrl { get => redeemUrl; set => redeemUrl = value; }
+        public string Description { get => description; set => description = value; }
+        public string ItemImage { get => itemImage; set => itemImage = value; }
+        public List<ItemAttribute> Attributes { get => attributes; set => attributes = value; }
+        public string RecipientAddress { get => recipientAddress; set => recipientAddress = value; }
     }
 
     /// <summary>
     /// Nonce response for authentication initiation.
     /// </summary>
     [Serializable]
-    public class NonceResponse
+    internal class NonceResponseData
     {
-        public string nonce;
+        [SerializeField] private string nonce;
+        public string Nonce => nonce;
     }
 
     /// <summary>
     /// Access token response from authentication.
     /// </summary>
     [Serializable]
-    public class AccessTokenResponse
+    internal class AccessTokenResponseData
     {
         [SerializeField] private string accessToken;
         public string AccessToken => accessToken;
@@ -117,7 +93,7 @@ namespace ForTemSdk
     /// User information from ForTem API.
     /// </summary>
     [Serializable]
-    public class User
+    public class UserResponseData
     {
         [SerializeField] private bool isUser;
         [SerializeField] private string nickname;
@@ -138,7 +114,7 @@ namespace ForTemSdk
     /// Game collection information.
     /// </summary>
     [Serializable]
-    public class Collection
+    public class CollectionResponseData
     {
         [SerializeField] private int id;
         [SerializeField] private string objectId;
@@ -168,7 +144,7 @@ namespace ForTemSdk
     public class Link
     {
         [SerializeField] private string website;
-        public string Website => website;
+        public string Website { get => website; set => website = value; }
     }
 
     /// <summary>
@@ -201,7 +177,7 @@ namespace ForTemSdk
     /// Collection item (NFT) information.
     /// </summary>
     [Serializable]
-    public class CollectionItem
+    public class ItemResponseData
     {
         [SerializeField] private int id;
         [SerializeField] private string objectId;
@@ -237,36 +213,27 @@ namespace ForTemSdk
     public class ItemCreationResponse
     {
         [SerializeField] private int itemId;
-        public int ItemID => itemId;
-
         [SerializeField] private string name;
-        public string Name => name;
-
         [SerializeField] private string description;
-        public string Description => description;
-
         [SerializeField] private int collectionID;
-        public int CollectionID => collectionID;
-
         [SerializeField] private int nftNumber;
-        public int NftNumber => nftNumber;
-
         [SerializeField] private string itemImage;
-        public string ItemImage => itemImage;
-
         [SerializeField] private int quantity;
-        public int Quantity => quantity;
-
         [SerializeField] private string redeemCode;
-        public string RedeemCode => redeemCode;
-
         [SerializeField] private string redeemUrl;
-        public string RedeemUrl => redeemUrl;
-
         [SerializeField] private List<ItemAttribute> attributes;
-        public List<ItemAttribute> Attributes => attributes;
-
         [SerializeField] private string status;
+
+        public int ItemID => itemId;
+        public string Name => name;
+        public string Description => description;
+        public int CollectionID => collectionID;
+        public int NftNumber => nftNumber;
+        public string ItemImage => itemImage;
+        public int Quantity => quantity;
+        public string RedeemCode => redeemCode;
+        public string RedeemUrl => redeemUrl;
+        public List<ItemAttribute> Attributes => attributes;
         public string Status => status;
     }
 

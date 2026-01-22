@@ -3,7 +3,7 @@ namespace ForTemSdk
     /// <summary>
     /// Configuration for ForTem SDK client.
     /// </summary>
-    public sealed class ForTemConfig : IForTemConfig
+    public sealed class ForTemConfig
     {
         /// <summary>
         /// API key for authentication (x-api-key header).
@@ -19,11 +19,6 @@ namespace ForTemSdk
         /// Enable debug logging for API calls.
         /// </summary>
         public bool DebugLogging { get; set; }
-
-        /// <summary>
-        /// Request timeout in seconds.
-        /// </summary>
-        public int TimeoutSeconds { get; set; } = 30;
 
         /// <summary>
         /// Creates a new ForTem configuration.
@@ -46,16 +41,6 @@ namespace ForTemSdk
             return Environment == ForTemEnvironment.Testnet
                 ? "https://testnet-api.fortem.gg"
                 : "https://api.fortem.gg";
-        }
-
-        /// <summary>
-        /// Gets the service URL for the configured environment.
-        /// </summary>
-        public string GetServiceUrl()
-        {
-            return Environment == ForTemEnvironment.Testnet
-                ? "https://testnet.fortem.gg"
-                : "https://fortem.gg";
         }
     }
 }
