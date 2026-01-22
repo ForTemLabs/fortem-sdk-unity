@@ -27,9 +27,6 @@ namespace ForTemSdk.Samples
         public TMP_InputField descriptionInput;
     }
 
-    /// <summary>
-    /// Advanced example showing error handling and task composition with async/await.
-    /// </summary>
     public class GettingStartedSample : MonoBehaviour
     {
         [SerializeField]
@@ -62,16 +59,22 @@ namespace ForTemSdk.Samples
         [SerializeField] private CreateCollectionUI _createCollectionUI;
         [SerializeField] private CreateItemUI _createItemUI;
 
-        private ForTemClientAsync _forTemClient;
+        private ForTemClient _forTemClient;
 
-        private void Start()
+        private async void Start()
         {
-            _authenticateBtn.onClick.AddListener(async () => await Authenticate());
             _getUserInfoBtn.onClick.AddListener(async () => await GetUserInfo());
             _getCollectionsBtn.onClick.AddListener(async () => await GetCollections());
             _createCollectionUI.createBtn.onClick.AddListener(async () => await CreateCollection());
-            _redeemItemBtn.onClick.AddListener(async () => await RedeemItem());
+            _redeemItemBtn.onClick.AddListener(async () => await GetItem());
             _createItemUI.createBtn.onClick.AddListener(async () => await CreateItem());
+
+            await InitializeForTem();
+        }
+
+        private async Task InitializeForTem()
+        {
+            await GetApiKey();
 
             var config = new ForTemConfig(
                 apiKey: _apiKey,
@@ -79,24 +82,20 @@ namespace ForTemSdk.Samples
                 debugLogging: true
             );
 
-            _forTemClient = new ForTemClientAsync(config);
+            _forTemClient = new ForTemClient(config);
         }
 
-        private async Task Authenticate()
+        private async Task GetApiKey()
         {
             try
             {
-                // Step 1: Get nonce
-                var nonceResult = await _forTemClient.Auth.GetNonceAsync();
-                Debug.Log($"Got nonce: {nonceResult.nonce}");
-                
-                // Step 2: Exchange nonce for token
-                var tokenResult = await _forTemClient.Auth.GetAccessTokenAsync(nonceResult.nonce);
-                Debug.Log($"Got Access Token: {tokenResult.AccessToken}");
+                // Simulate fetching API key from backend
+                await Task.Delay(1000);
+                Debug.Log("Fetched API key from backend");
             }
             catch (System.Exception ex)
             {
-                Debug.LogException(ex);
+                Debug.LogError($"Failed to fetch API key: {ex.Message}");
             }
         }
 
@@ -104,12 +103,12 @@ namespace ForTemSdk.Samples
         {
             try
             {
-                var result = await _forTemClient.User.GetUserAsync(_walletAddressInput.text);
+                var result = await _forTemClient.User.GetUser(_walletAddressInput.text);
                 Debug.Log($"User: {JsonUtility.ToJson(result, true)}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to get user: {ex}");
+                Debug.LogError($"Failed to get user: {ex.Message}");
             }
         }
 
@@ -117,7 +116,7 @@ namespace ForTemSdk.Samples
         {
             try
             {
-                var result = await _forTemClient.Collections.GetCollectionsAsync();
+                var result = await _forTemClient.Collections.GetCollections();
                 Debug.Log($"Found {result.Count} collections");
                 foreach (var collection in result)
                 {
@@ -126,7 +125,7 @@ namespace ForTemSdk.Samples
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to get collections: {ex}");
+                Debug.LogError($"Failed to get collections: {ex.Message}");
             }
         }
 
@@ -134,30 +133,33 @@ namespace ForTemSdk.Samples
         {
             try
             {
-                var result = await _forTemClient.Collections.CreateCollectionAsync(
-                    _createCollectionUI.nameInput.text,
-                    _createCollectionUI.descriptionInput.text
-                );
+                var requestBody = new CreateCollectionRequest
+                {
+                    Name = _createCollectionUI.nameInput.text,
+                    Description = _createCollectionUI.descriptionInput.text
+                };
+
+                var result = await _forTemClient.Collections.CreateCollection(requestBody);
                 Debug.Log($"Created collection: {JsonUtility.ToJson(result)}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to create collection: {ex}");
+                Debug.LogError($"Failed to create collection: {ex.Message}");
             }
         }
 
-        private async Task RedeemItem()
+        private async Task GetItem()
         {
             try
             {
                 var collectionId = int.Parse(_collectionIdInput.text);
                 var redeemCode = _redeemCodeInput.text;
-                var result = await _forTemClient.Collections.GetCollectionItemAsync(collectionId, redeemCode);
-                Debug.Log($"Collection Item: {JsonUtility.ToJson(result, true)}");
+                var result = await _forTemClient.Collections.GetItem(collectionId, redeemCode);
+                Debug.Log($"Retrieved Item: {JsonUtility.ToJson(result, true)}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to get collection item: {ex}");
+                Debug.LogError($"Failed to get collection item: {ex.Message}");
             }
         }
 
@@ -170,55 +172,52 @@ namespace ForTemSdk.Samples
                 //new ItemAttribute { Name = "Element", Value = "Fire" }
             };
 
-            ImageUploadResponse imageUploadResult = null;
+            string imageCid = null;
             if (!string.IsNullOrWhiteSpace(_createItemUI.imagePathInput.text))
             {
-                var imageBytes = System.IO.File.ReadAllBytes(_createItemUI.imagePathInput.text);
-                imageUploadResult = await UploadImage(imageBytes);
+                var imageData = System.IO.File.ReadAllBytes(_createItemUI.imagePathInput.text);
+                imageCid = await UploadImage(imageData, _createItemUI.imagePathInput.text);
             }
 
             try
             {
                 var collectionId = int.Parse(_collectionIdInput.text);
-                var result = await _forTemClient.Collections.CreateCollectionItemAsync(
-                    collectionId: collectionId,
-                    name: _createItemUI.nameInput.text,
-                    quantity: int.Parse(_createItemUI.quantityInput.text),
-                    redeemCode: _createItemUI.redeemCodeInput.text,
-                    description: _createItemUI.descriptionInput.text,
-                    attributes: attributes,
-                    itemImageCid: imageUploadResult?.ItemImage,
-                    recipientAddress: _createItemUI.recipientAddressInput.text
-                );
+                var requestBody = new CreateItemRequest
+                {
+                    Name = _createItemUI.nameInput.text,
+                    Description = _createItemUI.descriptionInput.text,
+                    RedeemCode = _createItemUI.redeemCodeInput.text,
+                    RedeemUrl = null,
+                    Quantity = int.Parse(_createItemUI.quantityInput.text),
+                    Attributes = attributes,
+                    ItemImage = imageCid,
+                    RecipientAddress = _createItemUI.recipientAddressInput.text,
+                };
 
+                //var result = await _forTemClient.Collections.CreateItemWithImage(collectionId, requestBody, imageData, fileName);
+                var result = await _forTemClient.Collections.CreateItem(collectionId, requestBody);
                 Debug.Log($"Created item: {JsonUtility.ToJson(result, true)}");
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to create item: {ex}");
+                Debug.LogError($"Failed to create item: {ex.Message}");
             }
         }
 
-        private async Task<ImageUploadResponse> UploadImage(byte[] imageData)
+        private async Task<string> UploadImage(byte[] imageData, string fileName)
         {
             try
             {
                 var collectionId = int.Parse(_collectionIdInput.text);
-                var result = await _forTemClient.Collections.UploadImageAsync(collectionId, imageData);
-                Debug.Log($"Uploaded image URL: {JsonUtility.ToJson(result, true)}");
+                var result = await _forTemClient.Collections.UploadImage(collectionId, imageData, fileName);
+                Debug.Log($"Uploaded image: {JsonUtility.ToJson(result, true)}");
                 return result;
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Failed to upload image: {ex}");
+                Debug.LogError($"Failed to upload image: {ex.Message}");
                 throw;
             }
-        }
-
-        private void OnDestroy()
-        {
-            // Clean up resources
-            _forTemClient?.Dispose();
         }
     }
 }

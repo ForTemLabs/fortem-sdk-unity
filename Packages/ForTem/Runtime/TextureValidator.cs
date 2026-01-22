@@ -8,9 +8,9 @@ namespace ForTemSdk
     /// </summary>
     public static class TextureValidator
     {
-        private const int MAX_WIDTH = 256;
-        private const int MAX_HEIGHT = 256;
-        private const int MAX_FILE_SIZE_BYTES = 200 * 1024; // 200KB
+        private const int MaxWidth = 256;
+        private const int MaxHeight = 256;
+        private const int MaxFileSizeBytes = 200 * 1024; // 200KB
 
         /// <summary>
         /// Validates a texture against ForTem requirements.
@@ -29,11 +29,11 @@ namespace ForTemSdk
             }
 
             // Check dimensions
-            if (texture.width > MAX_WIDTH || texture.height > MAX_HEIGHT)
+            if (texture.width > MaxWidth || texture.height > MaxHeight)
             {
                 errorMessage = $"Texture dimensions exceed maximum size. " +
                     $"Current: {texture.width}×{texture.height}px, " +
-                    $"Maximum: {MAX_WIDTH}×{MAX_HEIGHT}px";
+                    $"Maximum: {MaxWidth}×{MaxHeight}px";
                 return false;
             }
 
@@ -45,10 +45,10 @@ namespace ForTemSdk
                 return false;
             }
 
-            if (encodedData.Length > MAX_FILE_SIZE_BYTES)
+            if (encodedData.Length > MaxFileSizeBytes)
             {
                 int fileSizeKB = encodedData.Length / 1024;
-                int maxSizeKB = MAX_FILE_SIZE_BYTES / 1024;
+                int maxSizeKB = MaxFileSizeBytes / 1024;
                 errorMessage = $"Texture file size exceeds maximum. " +
                     $"Current: {fileSizeKB}KB, Maximum: {maxSizeKB}KB";
                 return false;
@@ -79,7 +79,7 @@ namespace ForTemSdk
         /// <returns>Maximum width and height in pixels</returns>
         public static (int width, int height) GetMaxDimensions()
         {
-            return (MAX_WIDTH, MAX_HEIGHT);
+            return (MaxWidth, MaxHeight);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace ForTemSdk
         /// <returns>Maximum file size in bytes</returns>
         public static int GetMaxFileSizeBytes()
         {
-            return MAX_FILE_SIZE_BYTES;
+            return MaxFileSizeBytes;
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace ForTemSdk
             }
 
             // Check if resize is needed
-            if (texture.width <= MAX_WIDTH && texture.height <= MAX_HEIGHT)
+            if (texture.width <= MaxWidth && texture.height <= MaxHeight)
             {
                 return texture;
             }
@@ -115,21 +115,21 @@ namespace ForTemSdk
 
             if (texture.width > texture.height)
             {
-                newWidth = MAX_WIDTH;
-                newHeight = Mathf.RoundToInt(MAX_WIDTH / aspectRatio);
+                newWidth = MaxWidth;
+                newHeight = Mathf.RoundToInt(MaxWidth / aspectRatio);
             }
             else
             {
-                newHeight = MAX_HEIGHT;
-                newWidth = Mathf.RoundToInt(MAX_HEIGHT * aspectRatio);
+                newHeight = MaxHeight;
+                newWidth = Mathf.RoundToInt(MaxHeight * aspectRatio);
             }
 
             // Clamp to ensure we don't exceed limits due to rounding
-            newWidth = Mathf.Min(newWidth, MAX_WIDTH);
-            newHeight = Mathf.Min(newHeight, MAX_HEIGHT);
+            newWidth = Mathf.Min(newWidth, MaxWidth);
+            newHeight = Mathf.Min(newHeight, MaxHeight);
 
             // Create resized texture
-            var resized = new Texture2D(newWidth, newHeight, TextureFormat.RGBA32, false);
+            var resized = new Texture2D(newWidth, newHeight, texture.format, false);
             
             // Use Unity's built-in texture scaling
             Graphics.ConvertTexture(texture, resized);
@@ -142,7 +142,7 @@ namespace ForTemSdk
         /// Progressively reduces quality until file size is acceptable.
         /// </summary>
         /// <param name="texture">The texture to compress</param>
-        /// <returns>Compressed texture, or original if already within size limit</returns>
+        /// <returns>Compressed texture, or null if resizing failed</returns>
         public static Texture2D ReduceFileSize(Texture2D texture)
         {
             if (texture == null)
@@ -151,7 +151,7 @@ namespace ForTemSdk
             }
 
             byte[] encoded = texture.EncodeToPNG();
-            if (encoded == null || encoded.Length <= MAX_FILE_SIZE_BYTES)
+            if (encoded == null || encoded.Length <= MaxFileSizeBytes)
             {
                 return texture;
             }
@@ -164,12 +164,6 @@ namespace ForTemSdk
 
             while (compressed != texture && attempts < maxAttempts)
             {
-                encoded = compressed.EncodeToPNG();
-                if (encoded.Length <= MAX_FILE_SIZE_BYTES)
-                {
-                    return compressed;
-                }
-
                 // Clean up previous attempt if it was a copy
                 if (compressed != texture)
                 {
@@ -180,26 +174,29 @@ namespace ForTemSdk
                 int newWidth = Mathf.Max(16, texture.width / scaleFactor);
                 int newHeight = Mathf.Max(16, texture.height / scaleFactor);
 
-                compressed = new Texture2D(newWidth, newHeight, TextureFormat.RGBA32, false);
-                Graphics.ConvertTexture(texture, compressed);
+                compressed = new Texture2D(newWidth, newHeight, texture.format, false);
+                if (!Graphics.ConvertTexture(texture, compressed))
+                {
+                    Object.DestroyImmediate(compressed);
+                    return null;
+                }
 
                 scaleFactor *= 2;
                 attempts++;
+
+                encoded = compressed.EncodeToPNG();
+                if (encoded.Length <= MaxFileSizeBytes)
+                {
+                    return compressed;
+                }
             }
 
-            encoded = compressed.EncodeToPNG();
-            if (encoded.Length <= MAX_FILE_SIZE_BYTES)
-            {
-                return compressed;
-            }
-
-            // If still too large, fall back to original
             if (compressed != texture)
             {
                 Object.DestroyImmediate(compressed);
             }
 
-            return texture;
+            return null;
         }
 
         /// <summary>
@@ -220,34 +217,34 @@ namespace ForTemSdk
             }
 
             // First, resize if dimensions exceed limits
-            Texture2D fixed_texture = texture;
-            if (texture.width > MAX_WIDTH || texture.height > MAX_HEIGHT)
+            Texture2D fixedTexture = texture;
+            if (texture.width > MaxWidth || texture.height > MaxHeight)
             {
-                fixed_texture = ResizeTexture(texture);
+                fixedTexture = ResizeTexture(texture);
             }
 
             // Then, reduce file size if needed
-            if (!IsValid(fixed_texture, out string sizeError))
+            if (!IsValid(fixedTexture, out string sizeError))
             {
                 if (sizeError != null && sizeError.Contains("file size"))
                 {
-                    fixed_texture = ReduceFileSize(fixed_texture);
+                    fixedTexture = ReduceFileSize(fixedTexture);
                 }
             }
 
             // Final validation
-            if (!IsValid(fixed_texture, out string finalError))
+            if (!IsValid(fixedTexture, out string finalError))
             {
                 errorMessage = finalError;
-                if (fixed_texture != texture)
+                if (fixedTexture != texture)
                 {
-                    Object.DestroyImmediate(fixed_texture);
+                    Object.DestroyImmediate(fixedTexture);
                 }
 
                 return null;
             }
 
-            return fixed_texture;
+            return fixedTexture;
         }
     }
 }

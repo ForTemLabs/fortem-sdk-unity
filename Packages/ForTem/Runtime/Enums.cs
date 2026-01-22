@@ -8,14 +8,4 @@ namespace ForTemSdk
         Testnet,
         Mainnet
     }
-
-    /// <summary>
-    /// Enum for HTTP request methods.
-    /// </summary>
-    public enum HttpMethod
-    {
-        Get,
-        Post,
-        Put
-    }
 }
