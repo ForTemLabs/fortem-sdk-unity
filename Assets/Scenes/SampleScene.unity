@@ -859,25 +859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ForTemSdk::ForTemSdk.Examples.AsyncAuthenticationExample
   _apiKey: developer_lb8jd47fa8_8b5b2a3f308fd66
-  _authenticateBtn: {fileID: 879282055}
-  _walletAddressInput: {fileID: 1798932483}
-  _getUserInfoBtn: {fileID: 22146873}
-  _getCollectionsBtn: {fileID: 577041538}
-  _collectionIdInput: {fileID: 1099503190}
-  _redeemItemBtn: {fileID: 1449829133}
-  _redeemCodeInput: {fileID: 733639907}
-  _createCollectionUI:
-    createBtn: {fileID: 1526665019}
-    nameInput: {fileID: 0}
-    descriptionInput: {fileID: 0}
-  _createItemUI:
-    createBtn: {fileID: 1609571694}
-    nameInput: {fileID: 1740135203}
-    descriptionInput: {fileID: 1405264113}
-    redeemCodeInput: {fileID: 27089084}
-    recipientAddressInput: {fileID: 1827313156}
-    quantityInput: {fileID: 852506064}
-    imagePathInput: {fileID: 1076359848}
+  sprite: {fileID: 21300000, guid: 686161071ef7775448055f798bea6d70, type: 3}
 --- !u!4 &48764121
 Transform:
   m_ObjectHideFlags: 0

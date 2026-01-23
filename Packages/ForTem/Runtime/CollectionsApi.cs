@@ -1,28 +1,39 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
+#nullable enable
+
 namespace ForTemSdk
 {
     /// <summary>
-    /// Async collections and items API operations.
+    /// Collection and item API operations.
     /// </summary>
     public sealed class CollectionsApi : ForTemApiBase
     {
+        /// <summary>
+        /// This regex matches any JSON key with an empty string value, e.g. "key":""<br/>
+        /// This is a workaround for Unity's JsonUtility which serializes null strings as empty strings.
+        /// </summary>
+        private static readonly Regex JsonRequestRegex = new Regex(
+            "\"[^\"]+\":\"\"[,]?",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         public CollectionsApi(ForTemClient client) : base(client)
         {
         }
 
         /// <summary>
-        /// Asynchronously get all game collections.
+        /// Get all game collections.
         /// </summary>
         public async Task<List<CollectionResponseData>> GetCollections()
         {
             var accessToken = await _client.Authenticate(forMinting: false);
 
-            var endpoint = "/api/v1/developers/collections";
+            var endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections";
             var request = UnityWebRequest.Get(endpoint);
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             var response = await SendWebRequest<List<CollectionResponseData>>(request);
@@ -31,7 +42,7 @@ namespace ForTemSdk
         }
 
         /// <summary>
-        /// Asynchronously create a new collection.
+        /// Create a new collection.
         /// </summary>
         /// <remarks>
         /// Maximum 5 collections allowed per developer account.
@@ -41,8 +52,8 @@ namespace ForTemSdk
             var accessToken = await _client.Authenticate(forMinting: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
-            bodyJson = System.Text.RegularExpressions.Regex.Replace(bodyJson, "\"[^\"]+\":\"\"[,]?", string.Empty).Replace(",}", "}");
-            var endpoint = "/api/v1/developers/collections";
+            bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
+            var endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections";
             var request = UnityWebRequest.Post(endpoint, bodyJson, "application/json");
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             var response = await SendWebRequest<CollectionResponseData>(request);
@@ -51,13 +62,13 @@ namespace ForTemSdk
         }
 
         /// <summary>
-        /// Asynchronously get a specific item from a collection.
+        /// Get a specific item from a collection.
         /// </summary>
         public async Task<ItemResponseData> GetItem(int collectionId, string itemCode)
         {
             var accessToken = await _client.Authenticate(forMinting: false);
 
-            string endpoint = $"/api/v1/developers/collections/{collectionId}/items/{itemCode}";
+            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{itemCode}";
             var request = UnityWebRequest.Get(endpoint);
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             var response = await SendWebRequest<ItemResponseData>(request);
@@ -65,6 +76,9 @@ namespace ForTemSdk
             return response;
         }
 
+        /// <summary>
+        /// Create a new item in a collection, with an image upload.
+        /// </summary>
         public async Task<ItemCreationResponse> CreateItemWithImage(
             int collectionId,
             CreateItemRequest item,
@@ -81,25 +95,15 @@ namespace ForTemSdk
         }
 
         /// <summary>
-        /// Asynchronously create a new item in a collection.
+        /// Create a new item in a collection.
         /// </summary>
-        public async Task<ItemCreationResponse> CreateItem(
-            int collectionId,
-            CreateItemRequest requestBody)
-            //string name,
-            //int quantity,
-            //string redeemCode,
-            //string redeemUrl = "",
-            //string description = "",
-            //string itemImageCid = "",
-            //List<ItemAttribute> attributes = null,
-            //string recipientAddress = "")
+        public async Task<ItemCreationResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
         {
             var accessToken = await _client.Authenticate(forMinting: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
-            bodyJson = System.Text.RegularExpressions.Regex.Replace(bodyJson, "\"[^\"]+\":\"\"[,]?", string.Empty).Replace(",}", "}");
-            string endpoint = $"/api/v1/developers/collections/{collectionId}/items";
+            bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
+            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items";
             var request = UnityWebRequest.Post(endpoint, bodyJson, "application/json");
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             var response = await SendWebRequest<ItemCreationResponse>(request);
@@ -113,7 +117,7 @@ namespace ForTemSdk
         /// <remarks>
         /// Allowed types: image/jpeg, image/png, image/webp
         /// </remarks>
-        public async Task<string> UploadImage(int collectionId, byte[] imageData, string fileName)
+        private async Task<string> UploadImage(int collectionId, byte[] imageData, string fileName)
         {
             var accessToken = await _client.Authenticate(forMinting: false);
 
@@ -128,7 +132,7 @@ namespace ForTemSdk
 
             var formData = new List<IMultipartFormSection>();
             formData.Add(new MultipartFormFileSection("file", imageData, fileName, contentType));
-            string endpoint = $"/api/v1/developers/collections/{collectionId}/items/image-upload";
+            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/image-upload";
             var request = UnityWebRequest.Post(endpoint, formData);
             request.method = "PUT";
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
