@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace ForTemSdk
 {
     /// <summary>
@@ -6,31 +8,32 @@ namespace ForTemSdk
     public sealed class ForTemConfig
     {
         /// <summary>
-        /// API key for authentication (x-api-key header).
+        /// ForTem API key for authentication (x-api-key header).
         /// </summary>
-        public string ApiKey { get; set; }
+        public string ApiKey { get; private set; }
 
         /// <summary>
         /// Target environment (Testnet or Mainnet).
         /// </summary>
-        public ForTemEnvironment Environment { get; set; }
+        public ForTemEnvironment Environment { get; private set; }
 
         /// <summary>
         /// Enable debug logging for API calls.
         /// </summary>
-        public bool DebugLogging { get; set; }
+        internal Logger Logger { get; private set; }
 
         /// <summary>
         /// Creates a new ForTem configuration.
         /// </summary>
-        /// <param name="apiKey">Your ForTem API key</param>
-        /// <param name="environment">Target environment</param>
-        /// <param name="debugLogging">Enable debug logging</param>
         public ForTemConfig(string apiKey, ForTemEnvironment environment = ForTemEnvironment.Mainnet, bool debugLogging = false)
         {
-            ApiKey = apiKey ?? throw new System.ArgumentNullException(nameof(apiKey));
+            ApiKey = Ensure.ArgumentNotNullOrEmpty(apiKey);
             Environment = environment;
-            DebugLogging = debugLogging;
+
+            Logger = new Logger(Debug.unityLogger.logHandler)
+            {
+                filterLogType = debugLogging ? LogType.Log : LogType.Error
+            };
         }
 
         /// <summary>

@@ -12,15 +12,12 @@ namespace ForTemSdk
 
         public ForTemApiBase(ForTemClient client)
         {
-            _client = client;
+            _client = Ensure.ArgumentNotNull(client);
         }
 
         protected async Task<T> SendWebRequest<T>(UnityWebRequest request)
         {
-            if (_client.Config.DebugLogging)
-            {
-                Debug.Log($"[ForTem] Requesting: {request.method} {request.url}");
-            }
+            _client.Config.Logger.Log($"[ForTem] Requesting: {request.method} {request.url}");
 
             await request.SendWebRequest();
 
@@ -34,12 +31,10 @@ namespace ForTemSdk
                 throw new HttpRequestException($"Error creating collection item: {errorMsg}");
             }
 
-            if (_client.Config.DebugLogging)
-            {
-                Debug.Log($"[ForTem] Response: {responseBody}");
-            }
-
             var response = ParseResponse<ApiResponse<T>>(responseBody);
+
+            _client.Config.Logger.Log($"[ForTem] Response: {responseBody}");
+
             return response.data;
         }
 
@@ -47,7 +42,7 @@ namespace ForTemSdk
         {
             if (string.IsNullOrEmpty(responseBody))
             {
-                throw new HttpRequestException("Empty response from server");
+                throw new HttpRequestException("Empty response body from server");
             }
 
             ApiResponse<T> apiResponse;
@@ -57,12 +52,12 @@ namespace ForTemSdk
             }
             catch (Exception ex)
             {
-                throw new HttpRequestException($"Failed to parse json response '{responseBody}': {ex.Message}", ex);
+                throw new HttpRequestException($"Failed to parse response as json: {responseBody}\n{ex.Message}", ex);
             }
 
             if (apiResponse.statusCode != 200)
             {
-                throw new HttpRequestException($"Server returned status code {apiResponse.statusCode}. data: {apiResponse.data}");
+                throw new HttpRequestException($"Server returned status code '{apiResponse.statusCode}'. data: {apiResponse.data}");
             }
 
             if (apiResponse.data == null)

@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
+#nullable enable
+
 namespace ForTemSdk
 {
     /// <summary>
@@ -10,10 +12,10 @@ namespace ForTemSdk
     /// </summary>
     public sealed class ForTemClient
     {
-        private ForTemConfig _config;
+        private readonly ForTemConfig _config;
 
         // Token management
-        private string _accessToken;
+        private string? _accessToken;
         private long _expiresAt;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -24,26 +26,12 @@ namespace ForTemSdk
 
         public ForTemClient(ForTemConfig config)
         {
-            SetConfig(config);
+            _config = config;
+            _config.Logger.Log($"[ForTem] SDK initialized - Environment: {_config.Environment}");
             _authApi = new AuthApi(this);
             _userApi = new UserApi(this);
             _collectionsApi = new CollectionsApi(this);
         }
-
-        private void SetConfig(ForTemConfig newConfig)
-        {
-            _config = newConfig;
-
-            if (_config.DebugLogging)
-            {
-                Debug.Log($"[ForTem] Async SDK initialized - Environment: {_config.Environment}");
-            }
-        }
-
-        /// <summary>
-        /// Gets the Auth API for authentication operations.
-        /// </summary>
-        internal AuthApi Auth => _authApi;
 
         /// <summary>
         /// Gets the User API for user management operations.
@@ -56,17 +44,14 @@ namespace ForTemSdk
         public CollectionsApi Collections => _collectionsApi;
 
         /// <summary>
+        /// Gets the Auth API for authentication operations.
+        /// </summary>
+        internal AuthApi Auth => _authApi;
+
+        /// <summary>
         /// Internal: Gets the current configuration.
         /// </summary>
         internal ForTemConfig Config => _config;
-
-        /// <summary>
-        /// Internal: Gets the current access token.
-        /// </summary>
-        internal string GetAccessToken()
-        {
-            return _accessToken;
-        }
 
         internal async Task<string> Authenticate(bool forMinting)
         {
