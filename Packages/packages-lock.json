@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.fortem-sdk.core": {
-      "version": "file:ForTem",
+    "com.fortem.fortem-sdk": {
+      "version": "file:ForTemSdk",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

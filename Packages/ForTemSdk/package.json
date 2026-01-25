@@ -1,0 +1,30 @@
+{
+  "name": "com.fortem.fortem-sdk",
+  "version": "0.1.0",
+  "displayName": "ForTem SDK",
+  "description": "C# wrapper around the ForTem backend API to facilitate easy integration with Unity projects.",
+  "unity": "2021.3",
+  "author": {
+    "name": "Colt Alan Bauman",
+    "url": "https://docs.fortem.gg",
+    "email": "colt@fortemlabs.com"
+  },
+  "keywords": [
+    "sdk",
+    "utility",
+    "tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ForTemLabs/fortem-sdk.git",
+    "revision": "main"
+  },
+  "license": "MIT",
+  "samples": [
+    {
+      "displayName": "Getting Started",
+      "description": "Basic example to get started with ForTem SDK",
+      "path": "Samples~/GettingStarted"
+    }
+  ]
+}
