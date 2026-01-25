@@ -12,7 +12,7 @@ namespace ForTemSdk.Samples
         [SerializeField] private Button _getUserInfoBtn;
 
         [Header("ForTem")]
-        [SerializeField] private GettingStartedSample _forTemClientProvider;
+        [SerializeField] private ForTemClientProvider _forTemClientProvider;
 
         private void Awake()
         {
@@ -24,7 +24,7 @@ namespace ForTemSdk.Samples
             try
             {
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var result = await forTemClient.User.GetUser(_walletAddressInput.text);
+                var result = await forTemClient.UserApi.GetUser(_walletAddressInput.text);
                 Debug.Log($"User: {JsonUtility.ToJson(result, true)}");
             }
             catch (System.Exception ex)
