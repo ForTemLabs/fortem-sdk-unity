@@ -24,6 +24,10 @@ namespace ForTemSdk.Samples
         [SerializeField] private TMP_InputField _getItemCollectionIdInput;
         [SerializeField] private TMP_InputField _getItemRedeemCodeInput;
 
+        [Header("Item Image")]
+        [SerializeField] private Image _itemImage;
+        [SerializeField] private UrlToUIImage _urlToUIImage;
+
         [Header("ForTem")]
         [SerializeField] private ForTemClientProvider _forTemClientProvider;
 
@@ -42,6 +46,11 @@ namespace ForTemSdk.Samples
                 var redeemCode = _getItemRedeemCodeInput.text;
                 var result = await forTemClient.ItemApi.GetItem(collectionId, redeemCode);
                 Debug.Log($"Retrieved Item: {JsonUtility.ToJson(result, true)}");
+
+                if (!string.IsNullOrEmpty(result.ItemImage))
+                {
+                    _urlToUIImage.SetImageFromUrl(_itemImage, result.ItemImage);
+                }
             }
             catch (System.Exception ex)
             {
