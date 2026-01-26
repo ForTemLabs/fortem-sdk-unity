@@ -702,11 +702,8 @@ GameObject:
   m_Component:
   - component: {fileID: 48764121}
   - component: {fileID: 48764120}
-  - component: {fileID: 48764122}
-  - component: {fileID: 48764124}
-  - component: {fileID: 48764123}
   m_Layer: 0
-  m_Name: SDK
+  m_Name: ForTemClientProvider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -741,64 +738,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &48764122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48764119}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6286f1fe3cf3faa4d9bf5ff49b5705b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.UserApiSample
-  _walletAddressInput: {fileID: 1798932483}
-  _getUserInfoBtn: {fileID: 22146873}
-  _forTemClientProvider: {fileID: 48764120}
---- !u!114 &48764123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48764119}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 486e2b627c4b09d489e36201277dca2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.ItemsApiSample
-  _createItemBtn: {fileID: 1609571694}
-  _nameInput: {fileID: 1740135203}
-  _descriptionInput: {fileID: 1405264113}
-  _redeemCodeInput: {fileID: 27089084}
-  _recipientAddressInput: {fileID: 1827313156}
-  _quantityInput: {fileID: 852506064}
-  _collectionIdInput: {fileID: 1288295763}
-  _imagePathInput: {fileID: 1076359848}
-  _getItemBtn: {fileID: 1449829133}
-  _getItemCollectionIdInput: {fileID: 0}
-  _getItemRedeemCodeInput: {fileID: 27089084}
-  _forTemClientProvider: {fileID: 48764120}
---- !u!114 &48764124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48764119}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07fbcefd2cf7bde4bb34ce6b25689c35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.CollectionsApiSample
-  _createBtn: {fileID: 1526665019}
-  _nameInput: {fileID: 686051237}
-  _descriptionInput: {fileID: 1765496593}
-  _websiteInput: {fileID: 1367481375}
-  _getCollectionsBtn: {fileID: 577041538}
-  _collectionIdInput: {fileID: 1099503190}
-  _forTemClientProvider: {fileID: 48764120}
 --- !u!1 &91316233
 GameObject:
   m_ObjectHideFlags: 0
@@ -1229,9 +1168,9 @@ GameObject:
   - component: {fileID: 234398884}
   - component: {fileID: 234398887}
   - component: {fileID: 234398886}
-  - component: {fileID: 234398885}
+  - component: {fileID: 234398888}
   m_Layer: 5
-  m_Name: RotatingImage
+  m_Name: UserImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1244,32 +1183,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234398883}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 426712914}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -9, y: -117}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &234398885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 234398883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fa099c39c6137e4ab5034b49c6e456d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.RotatingRt
-  _rectTransform: {fileID: 234398884}
-  _rotationSpeed: 30
 --- !u!114 &234398886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1308,6 +1233,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234398883}
   m_CullTransparentMesh: 1
+--- !u!114 &234398888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234398883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &297628393
 GameObject:
   m_ObjectHideFlags: 0
@@ -2133,14 +2078,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 411207736}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 918488989}
   - {fileID: 142922474}
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 536019070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2276,19 +2221,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 426712913}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1622463232}
+  - {fileID: 234398884}
   - {fileID: 1206530948}
   - {fileID: 419179468}
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 500604500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 322, y: -134.4}
+  m_AnchoredPosition: {x: -481, y: -134}
   m_SizeDelta: {x: 480.15, y: 95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &426712915
@@ -2836,6 +2782,73 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494070702}
   m_CullTransparentMesh: 1
+--- !u!1 &500604499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 500604500}
+  - component: {fileID: 500604502}
+  - component: {fileID: 500604501}
+  m_Layer: 0
+  m_Name: UserApiSample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &500604500
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500604499}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 426712914}
+  m_Father: {fileID: 1973612172}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &500604501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500604499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a557469fcafd14fa49b962388a31a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.UrlToUIImage
+--- !u!114 &500604502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500604499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6286f1fe3cf3faa4d9bf5ff49b5705b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.UserApiSample
+  _walletAddressInput: {fileID: 1798932483}
+  _getUserInfoBtn: {fileID: 22146873}
+  _profileImage: {fileID: 234398886}
+  _urlToUIImage: {fileID: 500604501}
+  _forTemClientProvider: {fileID: 48764120}
 --- !u!1 &513503850
 GameObject:
   m_ObjectHideFlags: 0
@@ -2994,6 +3007,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 513503850}
   m_CullTransparentMesh: 1
+--- !u!1 &536019069
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 536019070}
+  - component: {fileID: 536019071}
+  m_Layer: 0
+  m_Name: CollectionApiSample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &536019070
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536019069}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 577041537}
+  - {fileID: 411207737}
+  m_Father: {fileID: 1973612172}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &536019071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536019069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07fbcefd2cf7bde4bb34ce6b25689c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.CollectionsApiSample
+  _createBtn: {fileID: 1526665019}
+  _nameInput: {fileID: 686051237}
+  _descriptionInput: {fileID: 1765496593}
+  _websiteInput: {fileID: 1367481375}
+  _getCollectionsBtn: {fileID: 577041538}
+  _collectionIdInput: {fileID: 1099503190}
+  _forTemClientProvider: {fileID: 48764120}
 --- !u!1 &557535793
 GameObject:
   m_ObjectHideFlags: 0
@@ -3124,13 +3194,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577041536}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 837688488}
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 536019070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7162,6 +7232,83 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1024675545}
   m_CullTransparentMesh: 1
+--- !u!1 &1051810099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1051810100}
+  - component: {fileID: 1051810102}
+  - component: {fileID: 1051810101}
+  m_Layer: 0
+  m_Name: ItemApiSample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1051810100
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051810099}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1868260904}
+  - {fileID: 1388626699}
+  m_Father: {fileID: 1973612172}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1051810101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051810099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a557469fcafd14fa49b962388a31a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.UrlToUIImage
+--- !u!114 &1051810102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051810099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 486e2b627c4b09d489e36201277dca2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ForTemSdk.Samples::ForTemSdk.Samples.ItemsApiSample
+  _createItemBtn: {fileID: 1609571694}
+  _nameInput: {fileID: 1740135203}
+  _descriptionInput: {fileID: 1405264113}
+  _redeemCodeInput: {fileID: 27089084}
+  _recipientAddressInput: {fileID: 1827313156}
+  _quantityInput: {fileID: 852506064}
+  _collectionIdInput: {fileID: 1288295763}
+  _imagePathInput: {fileID: 1076359848}
+  _getItemBtn: {fileID: 1449829133}
+  _getItemCollectionIdInput: {fileID: 1099503190}
+  _getItemRedeemCodeInput: {fileID: 733639907}
+  _itemImage: {fileID: 1603736309}
+  _urlToUIImage: {fileID: 1051810101}
+  _forTemClientProvider: {fileID: 48764120}
 --- !u!1 &1076359846
 GameObject:
   m_ObjectHideFlags: 0
@@ -8666,19 +8813,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1388626698}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 985282175}
+  - {fileID: 1603736307}
   - {fileID: 1461108438}
   - {fileID: 626594571}
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 1051810100}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -29, y: -251}
+  m_AnchoredPosition: {x: 240.08, y: -261}
   m_SizeDelta: {x: 480.15, y: 139}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1388626700
@@ -9393,6 +9541,102 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1563497116}
+  m_CullTransparentMesh: 1
+--- !u!1 &1603736306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1603736307}
+  - component: {fileID: 1603736310}
+  - component: {fileID: 1603736309}
+  - component: {fileID: 1603736308}
+  m_Layer: 5
+  m_Name: ItemImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1603736307
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603736306}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1388626699}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 314, y: -19.5}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1603736308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603736306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
+--- !u!114 &1603736309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603736306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1603736310
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603736306}
   m_CullTransparentMesh: 1
 --- !u!1 &1609571692
 GameObject:
@@ -11311,14 +11555,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868260903}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1890212678}
   - {fileID: 1851151628}
-  m_Father: {fileID: 1973612172}
+  m_Father: {fileID: 1051810100}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -11464,12 +11708,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 577041537}
-  - {fileID: 1868260904}
-  - {fileID: 411207737}
-  - {fileID: 426712914}
-  - {fileID: 1388626699}
-  - {fileID: 234398884}
+  - {fileID: 500604500}
+  - {fileID: 536019070}
+  - {fileID: 1051810100}
   m_Father: {fileID: 936337137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
