@@ -10,14 +10,15 @@ namespace ForTemSdk
 {
     internal static class Ensure
     {
-        public static T ArgumentNotNull<T>([NotNull] T? obj, [CallerArgumentExpression("obj")] string paramName = "")
+        public static T ArgumentNotNull<T>(/*[NotNull] */T? obj, [CallerArgumentExpression("obj")] string paramName = "")
+            where T : class
         {
             return obj == null
                 ? throw new ArgumentNullException(paramName)
                 : obj;
         }
 
-        public static string ArgumentNotNullOrEmpty([NotNull] string? str, [CallerArgumentExpression("str")] string paramName = "")
+        public static string ArgumentNotNullOrEmpty(/*[NotNull] */string? str, [CallerArgumentExpression("str")] string paramName = "")
         {
             Ensure.ArgumentNotNull(str, paramName);
 

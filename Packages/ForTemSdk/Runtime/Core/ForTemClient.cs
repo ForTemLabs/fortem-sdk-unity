@@ -17,7 +17,7 @@ namespace ForTemSdk
         // Token management
         private string? _accessToken;
         private long _expiresAt;
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         // API endpoints
         private readonly AuthApi _authApi;

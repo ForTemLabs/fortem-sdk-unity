@@ -19,7 +19,7 @@ namespace ForTemSdk
         /// This regex matches any JSON key with an empty string value, e.g. "key":""<br/>
         /// This is a workaround for Unity's JsonUtility which serializes null strings as empty strings.
         /// </summary>
-        private static readonly Regex JsonRequestRegex = new(
+        private static readonly Regex JsonRequestRegex = new Regex(
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 

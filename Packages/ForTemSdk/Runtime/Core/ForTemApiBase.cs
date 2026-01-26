@@ -47,7 +47,7 @@ namespace ForTemSdk
                 var error = JsonUtility.FromJson<ForTemError>(responseBody);
                 throw new ForTemApiException(error);
             }
-            catch (Exception ex) when (ex is not ForTemApiException)
+            catch (Exception ex) when (!(ex is ForTemApiException))
             {
                 throw new HttpRequestException($"HTTP {request.error} ({request.responseCode}). Response: {responseBody}", ex);
             }

@@ -98,7 +98,8 @@ namespace ForTemSdk
             var contentType = extension switch
             {
                 ".png" => "image/png",
-                ".jpg" or ".jpeg" => "image/jpeg",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
                 ".webp" => "image/webp",
                 _ => throw new ArgumentException("Unsupported image file type. Allowed types: .png, .jpg, .jpeg, .webp")
             };
