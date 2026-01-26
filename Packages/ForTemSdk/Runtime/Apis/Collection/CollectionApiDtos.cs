@@ -7,7 +7,7 @@ namespace ForTemSdk
     /// Request to create a collection.
     /// </summary>
     [Serializable]
-    public class CreateCollectionRequest
+    public sealed class CreateCollectionRequest
     {
         [SerializeField] private string name;
         [SerializeField] private string description;
@@ -41,7 +41,7 @@ namespace ForTemSdk
     /// Game collection information.
     /// </summary>
     [Serializable]
-    public class CollectionResponse
+    public sealed class CollectionResponse
     {
         [SerializeField] private int id;
         [SerializeField] private string objectId;
@@ -103,7 +103,7 @@ namespace ForTemSdk
     /// Link information for collections.
     /// </summary>
     [Serializable]
-    public class CollectionLink
+    public sealed class CollectionLink
     {
         [SerializeField] private string website;
 
