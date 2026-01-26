@@ -7,7 +7,7 @@ namespace ForTemSdk
     /// User information from ForTem API.
     /// </summary>
     [Serializable]
-    public class GetUserResponse
+    public sealed class GetUserResponse
     {
         [SerializeField] private bool isUser;
         [SerializeField] private string nickname;

@@ -16,14 +16,13 @@ namespace ForTemSdk.Samples
         [SerializeField] private TMP_InputField _redeemCodeInput;
         [SerializeField] private TMP_InputField _recipientAddressInput;
         [SerializeField] private TMP_InputField _quantityInput;
+        [SerializeField] private TMP_InputField _collectionIdInput;
         [SerializeField] private TMP_InputField _imagePathInput;
 
         [Header("Get Item")]
         [SerializeField] private Button _getItemBtn;
+        [SerializeField] private TMP_InputField _getItemCollectionIdInput;
         [SerializeField] private TMP_InputField _getItemRedeemCodeInput;
-
-        [Header("Shared Input")]
-        [SerializeField] private TMP_InputField _collectionIdInput;
 
         [Header("ForTem")]
         [SerializeField] private ForTemClientProvider _forTemClientProvider;
@@ -39,7 +38,7 @@ namespace ForTemSdk.Samples
             try
             {
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var collectionId = int.Parse(_collectionIdInput.text);
+                var collectionId = int.Parse(_getItemCollectionIdInput.text);
                 var redeemCode = _getItemRedeemCodeInput.text;
                 var result = await forTemClient.ItemApi.GetItem(collectionId, redeemCode);
                 Debug.Log($"Retrieved Item: {JsonUtility.ToJson(result, true)}");
@@ -59,13 +58,16 @@ namespace ForTemSdk.Samples
                 //new ItemAttribute { Name = "Element", Value = "Fire" }
             };
 
-            string imageCid = null;
+            string fileName = null;
+            byte[] imageData = null;
             if (!string.IsNullOrWhiteSpace(_imagePathInput.text))
             {
-                var imageData = System.IO.File.ReadAllBytes(_imagePathInput.text);
-                Texture2D tex = new Texture2D(2, 2);
+                // Load image from local file path and pass it to the image util to reduce dimensions if bigger than 256x256.
+                imageData = System.IO.File.ReadAllBytes(_imagePathInput.text);
+                var tex = new Texture2D(2, 2);
                 tex.LoadImage(imageData);
-                //imageCid = await UploadImage(imageData, _imagePathInput.text);
+                fileName = System.IO.Path.GetFileName(_imagePathInput.text);
+                imageData = ImageUtil.TextureToByteArray(tex);
             }
 
             try
@@ -79,13 +81,11 @@ namespace ForTemSdk.Samples
                     RedeemUrl = null,
                     Quantity = int.Parse(_quantityInput.text),
                     Attributes = attributes,
-                    ItemImage = imageCid,
                     RecipientAddress = _recipientAddressInput.text,
                 };
 
                 var forTemClient = await _forTemClientProvider.GetClient();
-                //var result = await forTemClient.Collections.CreateItemWithImage(collectionId, requestBody, imageData, fileName);
-                var result = await forTemClient.ItemApi.CreateItem(collectionId, requestBody);
+                var result = await forTemClient.ItemApi.CreateItemWithImage(collectionId, requestBody, imageData, fileName);
                 Debug.Log($"Created item: {JsonUtility.ToJson(result, true)}");
             }
             catch (System.Exception ex)

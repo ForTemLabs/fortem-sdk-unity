@@ -8,7 +8,7 @@ namespace ForTemSdk
     /// Request to create a collection item.
     /// </summary>
     [System.Serializable]
-    public class CreateItemRequest
+    public sealed class CreateItemRequest
     {
         [SerializeField] private string name;
         [SerializeField] private int quantity;
@@ -77,7 +77,7 @@ namespace ForTemSdk
     /// Item creation response.
     /// </summary>
     [Serializable]
-    public class CreateItemResponse
+    public sealed class CreateItemResponse
     {
         [SerializeField] private int itemId;
         [SerializeField] private string name;
@@ -151,14 +151,33 @@ namespace ForTemSdk
         /// KIOSK_LISTED: The item is listed for sale to other users.<br/>
         /// REDEEMED: The NFT has been burned for in-game use (redemption completed).
         /// </remarks>
-        public string Status => status;
+        public string RawStatus => status;
+
+        /// <summary>
+        /// Status of the created item.
+        /// </summary>
+        public ItemStatus Status
+        {
+            get
+            {
+                return status switch
+                {
+                    "PROCESSING" => ItemStatus.Processing,
+                    "MINTED" => ItemStatus.Minted,
+                    "OFFER_PENDING" => ItemStatus.OfferPending,
+                    "KIOSK_LISTED" => ItemStatus.KioskListed,
+                    "REDEEMED" => ItemStatus.Redeemed,
+                    _ => ItemStatus.Unknown,
+                };
+            }
+        }
     }
 
     /// <summary>
     /// Collection item (NFT) information.
     /// </summary>
     [Serializable]
-    public class GetItemResponse
+    public sealed class GetItemResponse
     {
         [SerializeField] private int id;
         [SerializeField] private string objectId;
@@ -221,8 +240,8 @@ namespace ForTemSdk
         /// <summary>
         /// Status of the item.
         /// </summary>
-        /// <remarks><inheritdoc cref="CreateItemResponse.Status"/></remarks>"
-        public string Status => status;
+        /// <remarks><inheritdoc cref="CreateItemResponse.RawStatus"/></remarks>"
+        public string RawStatus => status;
 
         /// <summary>
         /// Timestamp when the item was created.
@@ -233,13 +252,32 @@ namespace ForTemSdk
         /// Timestamp when the item was last updated.
         /// </summary>
         public long UpdatedAt => updatedAt;
+
+        /// <summary>
+        /// Status of the item.
+        /// </summary>
+        public ItemStatus Status
+        {
+            get
+            {
+                return status switch
+                {
+                    "PROCESSING" => ItemStatus.Processing,
+                    "MINTED" => ItemStatus.Minted,
+                    "OFFER_PENDING" => ItemStatus.OfferPending,
+                    "KIOSK_LISTED" => ItemStatus.KioskListed,
+                    "REDEEMED" => ItemStatus.Redeemed,
+                    _ => ItemStatus.Unknown,
+                };
+            }
+        }
     }
 
     /// <summary>
     /// Owner information for items.
     /// </summary>
     [Serializable]
-    public class ItemOwner
+    public sealed class ItemOwner
     {
         [SerializeField] private string nickname;
         [SerializeField] private string walletAddress;
@@ -259,7 +297,7 @@ namespace ForTemSdk
     /// Attribute for collection items.
     /// </summary>
     [Serializable]
-    public class ItemAttribute
+    public sealed class ItemAttribute
     {
         [SerializeField] private string name;
         [SerializeField] private string value;
@@ -281,7 +319,7 @@ namespace ForTemSdk
     /// Image upload response.
     /// </summary>
     [Serializable]
-    public class ImageUploadResponse
+    public sealed class ImageUploadResponse
     {
         [SerializeField] private string itemImage;
 

@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -26,11 +25,7 @@ namespace ForTemSdk
 
             if (request.result != UnityWebRequest.Result.Success)
             {
-                var errorMsg = string.IsNullOrEmpty(responseBody)
-                    ? $"HTTP {request.error} ({request.responseCode})"
-                    : responseBody;
-                // TODO: Custom exception
-                throw new HttpRequestException(errorMsg);
+                Throw(request, responseBody);
             }
 
             var response = ParseResponse<T>(responseBody);
@@ -40,7 +35,25 @@ namespace ForTemSdk
             return response;
         }
 
-        private T ParseResponse<T>(string responseBody)
+        private static Exception Throw(UnityWebRequest request, string responseBody)
+        {
+            if (string.IsNullOrEmpty(responseBody))
+            {
+                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode})");
+            }
+
+            try
+            {
+                var error = JsonUtility.FromJson<ForTemError>(responseBody);
+                throw new ForTemApiException(error);
+            }
+            catch (Exception ex) when (ex is not ForTemApiException)
+            {
+                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode}). Response: {responseBody}", ex);
+            }
+        }
+
+        private static T ParseResponse<T>(string responseBody)
         {
             if (string.IsNullOrEmpty(responseBody))
             {
@@ -69,53 +82,5 @@ namespace ForTemSdk
 
             return apiResponse.data;
         }
-
-        private Task SendRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-            operation.completed += _ => tcs.SetResult(true);
-            return tcs.Task;
-        }
     }
-
-#if !UNITY_2023_1_OR_NEWER
-    public static class UnityWebRequestAsyncOperationExtensions
-    {
-        public static UnityWebRequestAsyncOperationAwaiter GetAwaiter(this UnityWebRequestAsyncOperation asyncOp)
-        {
-            return new UnityWebRequestAsyncOperationAwaiter(asyncOp);
-        }
-    }
-
-    public struct UnityWebRequestAsyncOperationAwaiter : INotifyCompletion
-    {
-        private readonly UnityWebRequestAsyncOperation _asyncOp;
-        private Action _continuation;
-
-        public UnityWebRequestAsyncOperationAwaiter(UnityWebRequestAsyncOperation asyncOp)
-        {
-            _continuation = null;
-            _asyncOp = asyncOp;
-            _asyncOp.completed += OnRequestCompleted;
-        }
-
-        public bool IsCompleted => _asyncOp.isDone;
-
-        public void OnCompleted(Action continuation)
-        {
-            _continuation = continuation;
-        }
-
-        private void OnRequestCompleted(UnityEngine.AsyncOperation op)
-        {
-            _continuation?.Invoke();
-        }
-
-        public UnityWebRequest GetResult()
-        {
-            return _asyncOp.webRequest;
-        }
-    }
-#endif
 }
