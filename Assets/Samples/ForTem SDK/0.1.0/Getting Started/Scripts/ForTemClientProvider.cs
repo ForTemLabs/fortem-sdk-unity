@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,18 +10,9 @@ namespace ForTemSdk.Samples
         private ForTemClient _forTemClient;
         private bool _hasError;
 
-        public Sprite sprite;
-
-        [ContextMenu("SpriteToByteArray")]
-        public void SpriteToByteArray()
-        {
-            var imageData = ImageUtil.SpriteToByteArray(sprite);
-            File.WriteAllBytes(Path.Combine(Application.dataPath, "sprite_image.png"), imageData);
-        }
-
         public async ValueTask<ForTemClient> GetClient()
         {
-            while (_forTemClient == null || _hasError)
+            while (_forTemClient == null && !_hasError)
             {
                 await Task.Delay(100);
             }

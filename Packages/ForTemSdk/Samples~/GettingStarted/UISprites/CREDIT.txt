@@ -1,0 +1,4 @@
+Credit to the following creators on the Unity Asset Store for these free UI artwork.
+
+https://assetstore.unity.com/packages/2d/gui/icons/steampunkui-238976
+https://assetstore.unity.com/packages/2d/gui/icons/gui-parts-159068
