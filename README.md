@@ -1,2 +1,15 @@
-# fortem-sdk
-Wrappers around the ForTem backend API
+# ForTem SDK Unity Package
+
+A C# wrapper around the ForTem backend Rest API to facilitate easy integration with Unity projects.
+
+Getting Started documentation can be found [here](Packages/ForTemSdk/Documentation~/README.md).
+
+Minimum supported Unity version: 2021.2
+
+## Package Installation
+
+This package is designed to be installed via Git URL.
+
+```
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/ForTemSdk
+```

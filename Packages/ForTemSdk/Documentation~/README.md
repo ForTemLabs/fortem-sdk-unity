@@ -1,49 +1,103 @@
-# ForTem Core - API Documentation
+# ForTem SDK Documentation
 
 ## Overview
 
-ForTem Core provides a lightweight, extensible framework for Unity game development.
+The ForTem SDK provides a consumer-friendly wrapper around the ForTem Web3 Gaming API. It simplifies authentication, user management, and NFT collection operations for Unity games.
 
-## Namespaces
+Main API documentation can be found at [docs.fortem.gg](https://docs.fortem.gg/)
 
-### `ForTem.Core`
-Main namespace containing core framework functionality.
+## Key Features
 
-#### Classes
+- **Authentication** - Authentication flow is handled behind the scenes
+- **User Lookup** - Query user information by wallet address
+- **Collection Management** - Create and browse game NFT collections
+- **Item Management** - Create and query NFT items
+- **Image Upload** - Upload item images via IPFS integration
+- **Debug Logging** - Optional detailed logging for development
+- **Environment Support** - Seamlessly switch between Testnet and Mainnet
 
-- **Core** - Main entry point for the framework
-  - `Version` - Current version of ForTem Core
-  - `Initialize()` - Initializes the framework
+## Quick Start
 
-### `ForTem.Core.Editor`
-Editor-specific utilities and tools.
+### 1. Initialize the SDK
 
-## Getting Started
-
-1. Import the ForTem Core package
-2. Call `Core.Initialize()` in your game's startup code
-3. Explore the API and extend as needed
-
-## Examples
-
-### Basic Initialization
+Login to https://testnet.fortem.gg or https://fortem.gg to get your API key.
 
 ```csharp
-using ForTem.Core;
+using ForTem.SDK;
 
-public class GameManager : MonoBehaviour
-{
-    private void Start()
-    {
-        Core.Initialize();
-    }
-}
+var config = new ForTemConfig(
+    apiKey: "your-api-key",
+    environment: ForTemEnvironment.Testnet,
+    debugLogging: true
+);
+
+var forTemClient = new ForTemClient(config);
 ```
 
-## Contributing
+### 3. Get User Information
 
-To extend the framework:
-1. Add new classes to the appropriate namespace
-2. Document with XML comments
-3. Add tests in the `Tests` folder
-4. Update this documentation
+```csharp
+try
+{
+    GetUserResponse user = await forTemClient.UserApi.GetUser(walletAddress: "0x...");
+    Debug.Log($"Collection: {JsonUtility.ToJson(user, true)}");
+}
+catch (ForTemApiException ex)
+{
+    Debug.LogError($"Failed to get user: {ex.Message}");
+}
+// Example response:
+// {
+//   "isUser": true,
+//   "nickname": "6f0b8ffc0d11",
+//   "profileImage": "profile/default.png",
+//   "walletAddress": "0x904bb53d5508de51fdf1d3c3960fd597e52cb39ae11c562ca22f1acbb2702d8b"
+// }
+```
+
+### 4. Browse Collections
+
+```csharp
+try
+{
+    List<CollectionResponse> collections = await forTemClient.CollectionApi.GetCollections();
+    Debug.Log($"Found {collections.Count} collections");
+    foreach (var collection in collections)
+    {
+        Debug.Log($"Collection: {JsonUtility.ToJson(collection, true)}");
+    }
+}
+catch (ForTemApiException ex)
+{
+    Debug.LogError($"Failed to get collections: {ex.Message}");
+}
+// Example response:
+// [{
+//     "id": 50,
+//     "objectId": "0x5809794eaab2324dfd04fc2ef572574fdff559b3d97e598f72652fa136ea314e",
+//     "name": "collection",
+//     "description": "collection description",
+//     "tradeVolume": "0",
+//     "itemCount": 0,
+//     "createdAt": 1761812950000,
+//     "updatedAt": 1761812958000
+// }]
+```
+
+## Endpoints
+
+### Authentication
+- `POST /api/v1/developers/auth/nonce` - Get authentication nonce
+- `POST /api/v1/developers/auth/access-token` - Get access token
+
+### User
+- `GET /api/v1/developers/users/:walletAddress` - Get user by wallet address
+
+### Collections
+- `GET /api/v1/developers/collections` - List all collections
+- `POST /api/v1/developers/collections` - Create collection
+
+### Items
+- `GET /api/v1/developers/collections/:collectionId/items/:code` - Get item by code
+- `POST /api/v1/developers/collections/:collectionId/items` - Create item
+- `PUT /api/v1/developers/collections/:collectionId/items/image-upload` - Upload image

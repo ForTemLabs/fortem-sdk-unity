@@ -23,7 +23,7 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        public CollectionApi(ForTemClient client) : base(client)
+        internal CollectionApi(ForTemClient client) : base(client)
         {
         }
 

@@ -19,7 +19,7 @@ namespace ForTemSdk
         {
             _client.Config.Logger.Log($"[ForTem] Requesting: {request.method} {request.url}");
 
-            await request.SendWebRequest();
+            await SendRequest(request);
 
             string responseBody = request.downloadHandler.text;
 
@@ -81,6 +81,14 @@ namespace ForTemSdk
             }
 
             return apiResponse.data;
+        }
+
+        public Task SendRequest(UnityWebRequest request)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            var operation = request.SendWebRequest();
+            operation.completed += _ => tcs.SetResult(true);
+            return tcs.Task;
         }
     }
 }

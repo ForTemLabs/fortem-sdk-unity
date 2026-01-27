@@ -11,7 +11,7 @@ namespace ForTemSdk
     /// </summary>
     public sealed class UserApi : ForTemApiBase
     {
-        public UserApi(ForTemClient client) : base(client)
+        internal UserApi(ForTemClient client) : base(client)
         {
         }
 

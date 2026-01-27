@@ -22,7 +22,7 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        public ItemApi(ForTemClient client) : base(client)
+        internal ItemApi(ForTemClient client) : base(client)
         {
         }
 
@@ -66,7 +66,7 @@ namespace ForTemSdk
         /// </summary>
         /// <remarks>
         /// Custom images can be uploaded separately through the image-upload endpoint.
-        /// If you do not upload a custom image, the item will automatically display ForTem’s default item image.
+        /// If you do not upload a custom image, the item will automatically display ForTemï¿½s default item image.
         /// </remarks>
         public async Task<CreateItemResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
         {
