@@ -6,6 +6,16 @@ The ForTem SDK provides a consumer-friendly wrapper around the ForTem Web3 Gamin
 
 Main API documentation can be found at [docs.fortem.gg](https://docs.fortem.gg/)
 
+Minimum supported Unity version: 2021.2
+
+## Package Installation
+
+This package is designed to be installed via Git URL.
+
+```
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/ForTemSdk
+```
+
 ## Key Features
 
 - **Authentication** - Authentication flow is handled behind the scenes
