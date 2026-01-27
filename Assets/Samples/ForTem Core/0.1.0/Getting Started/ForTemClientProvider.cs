@@ -6,10 +6,10 @@ namespace ForTemSdk.Samples
 {
     public class ForTemClientProvider : MonoBehaviour
     {
-        [SerializeField]
-        private string _apiKey;
+        [SerializeField] private string _apiKey;
 
         private ForTemClient _forTemClient;
+        private bool _hasError;
 
         public Sprite sprite;
 
@@ -22,7 +22,7 @@ namespace ForTemSdk.Samples
 
         public async ValueTask<ForTemClient> GetClient()
         {
-            while (_forTemClient == null)
+            while (_forTemClient == null || _hasError)
             {
                 await Task.Delay(100);
             }
@@ -32,6 +32,13 @@ namespace ForTemSdk.Samples
 
         private async void Awake()
         {
+            if (string.IsNullOrEmpty(_apiKey))
+            {
+                Debug.LogError("Assign API key in the inspector");
+                _hasError = true;
+                return;
+            }
+
             await InitializeForTem();
         }
 
@@ -59,6 +66,7 @@ namespace ForTemSdk.Samples
             catch (System.Exception ex)
             {
                 Debug.LogError($"Failed to fetch API key: {ex.Message}");
+                _hasError = true;
             }
         }
     }
