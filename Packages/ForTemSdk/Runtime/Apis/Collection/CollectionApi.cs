@@ -13,7 +13,7 @@ namespace ForTemSdk
     /// A game collection must be created before any items can be registered.
     /// Each developer account can have up to five collections.
     /// </summary>
-    public sealed class CollectionApi : ForTemApiBase
+    internal sealed class CollectionApi : /*ForTemApiBase,*/ ICollectionApi
     {
         /// <summary>
         /// This regex matches any JSON key with an empty string value, e.g. "key":""<br/>
@@ -23,8 +23,14 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        internal CollectionApi(ForTemClient client) : base(client)
+        private readonly ForTemClientHelper _helper;
+        private readonly AuthApi _authApi;
+
+        public CollectionApi(ForTemClientHelper helper, AuthApi authApi)
+            //: base(webRequestSender, authApi)
         {
+            _helper = helper;
+            _authApi = authApi;
         }
 
         /// <summary>
@@ -32,12 +38,12 @@ namespace ForTemSdk
         /// </summary>
         public async Task<List<CollectionResponse>> GetCollections()
         {
-            var accessToken = await _client.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(forMinting: false);
 
-            var endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections";
+            var endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections";
             using var request = UnityWebRequest.Get(endpoint);
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<List<CollectionResponse>>(request);
+            var response = await _helper.SendWebRequest<List<CollectionResponse>>(request);
 
             return response;
         }
@@ -50,14 +56,14 @@ namespace ForTemSdk
         /// </remarks>
         public async Task<CollectionResponse> CreateCollection(CreateCollectionRequest requestBody)
         {
-            var accessToken = await _client.Authenticate(forMinting: true);
+            var accessToken = await _authApi.Authenticate(forMinting: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
             bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
-            var endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections";
+            var endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections";
             using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<CollectionResponse>(request);
+            var response = await _helper.SendWebRequest<CollectionResponse>(request);
 
             return response;
         }

@@ -12,7 +12,7 @@ namespace ForTemSdk
     /// <summary>
     /// Create or retrieve items within a specific collection.
     /// </summary>
-    public sealed class ItemApi : ForTemApiBase
+    internal sealed class ItemApi : /*ForTemApiBase,*/ IItemApi
     {
         /// <summary>
         /// This regex matches any JSON key with an empty string value, e.g. "key":""<br/>
@@ -22,8 +22,14 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        internal ItemApi(ForTemClient client) : base(client)
+        private readonly ForTemClientHelper _helper;
+        private readonly AuthApi _authApi;
+
+        public ItemApi(ForTemClientHelper helper, AuthApi authApi)
+            //: base(webRequestSender, authApi)
         {
+            _helper = helper;
+            _authApi = authApi;
         }
 
         /// <summary>
@@ -31,12 +37,12 @@ namespace ForTemSdk
         /// </summary>
         public async Task<GetItemResponse> GetItem(int collectionId, string redeemCode)
         {
-            var accessToken = await _client.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(forMinting: false);
 
-            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{redeemCode}";
+            string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{redeemCode}";
             using var request = UnityWebRequest.Get(endpoint);
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<GetItemResponse>(request);
+            var response = await _helper.SendWebRequest<GetItemResponse>(request);
 
             return response;
         }
@@ -70,14 +76,14 @@ namespace ForTemSdk
         /// </remarks>
         public async Task<CreateItemResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
         {
-            var accessToken = await _client.Authenticate(forMinting: true);
+            var accessToken = await _authApi.Authenticate(forMinting: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
             bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
-            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items";
+            string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items";
             using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<CreateItemResponse>(request);
+            var response = await _helper.SendWebRequest<CreateItemResponse>(request);
 
             return response;
         }
@@ -92,7 +98,7 @@ namespace ForTemSdk
         /// </remarks>
         private async Task<string> UploadImage(int collectionId, byte[] imageData, string fileName)
         {
-            var accessToken = await _client.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(forMinting: false);
 
             var extension = System.IO.Path.GetExtension(fileName).ToLower();
             var contentType = extension switch
@@ -105,11 +111,11 @@ namespace ForTemSdk
 
             var formData = new List<IMultipartFormSection>();
             formData.Add(new MultipartFormFileSection("file", imageData, fileName, contentType));
-            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/image-upload";
+            string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/image-upload";
             using var request = UnityWebRequest.Post(endpoint, formData);
             request.method = "PUT";
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<ImageUploadResponse>(request);
+            var response = await _helper.SendWebRequest<ImageUploadResponse>(request);
 
             return response.ItemImage;
         }

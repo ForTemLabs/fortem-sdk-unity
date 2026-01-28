@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.Networking;
 
 #nullable enable
@@ -9,10 +8,16 @@ namespace ForTemSdk
     /// <summary>
     /// User management API operations.
     /// </summary>
-    public sealed class UserApi : ForTemApiBase
+    internal sealed class UserApi : /*ForTemApiBase,*/ IUserApi
     {
-        internal UserApi(ForTemClient client) : base(client)
+        private readonly ForTemClientHelper _helper;
+        private readonly AuthApi _authApi;
+
+        public UserApi(ForTemClientHelper helper, AuthApi authApi)
+            //: base(webRequestSender, authApi)
         {
+            _helper = helper;
+            _authApi = authApi;
         }
 
         /// <summary>
@@ -21,12 +26,12 @@ namespace ForTemSdk
         /// </summary>
         public async Task<GetUserResponse> GetUser(string walletAddress)
         {
-            var accessToken = await _client.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(forMinting: false);
 
-            string endpoint = $"{_client.Config.GetApiBaseUrl()}/api/v1/developers/users/{walletAddress}";
+            string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/users/{walletAddress}";
             using var request = UnityWebRequest.Get(endpoint);
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            var response = await SendWebRequest<GetUserResponse>(request);
+            var response = await _helper.SendWebRequest<GetUserResponse>(request);
 
             return response;
         }
