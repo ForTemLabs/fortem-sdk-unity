@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -23,10 +25,18 @@ namespace ForTemSdk.Samples
 
         private async Task GetUserInfo()
         {
+            if (_busyOverlay.activeSelf)
+            {
+                return;
+            }
+
+            _busyOverlay.SetActive(true);
+            using var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(5));
+
             try
             {
-                _busyOverlay.SetActive(true);
-                var forTemClient = await _forTemClientProvider.GetClient();
+                var forTemClient = await _forTemClientProvider.GetClient(cts.Token);
                 var result = await forTemClient.GetUser(_walletAddressInput.text);
                 Debug.Log($"User: {JsonUtility.ToJson(result, true)}");
                 _appContext.CurrentUser = result;
