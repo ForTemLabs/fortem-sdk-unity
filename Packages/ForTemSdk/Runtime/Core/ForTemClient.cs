@@ -1,7 +1,9 @@
-using System;
-using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 
 #nullable enable
 
@@ -10,82 +12,173 @@ namespace ForTemSdk
     /// <summary>
     /// Main client class for interacting with the ForTem Rest API.
     /// </summary>
-    public sealed class ForTemClient
+    public sealed class ForTemClient : IForTemClient
     {
+        /// <summary>
+        /// This regex matches any JSON key with an empty string value, e.g. "key":""<br/>
+        /// This is a workaround for Unity's JsonUtility which serializes null strings as empty strings.<br/>
+        /// We prefer this over adding a library dependency like Json.NET
+        /// </summary>
+        private static readonly Regex JsonRequestRegex = new(
+            "\"[^\"]+\":\"\"[,]?",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        private WebRequestHelper _webRequestHelper;
         private readonly ForTemConfig _config;
-
-        // Token management
-        private string? _accessToken;
-        private long _expiresAt;
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-        // API endpoints
         private readonly AuthApi _authApi;
-        private readonly UserApi _userApi;
-        private readonly CollectionApi _collectionApi;
-        private readonly ItemApi _itemApi;
 
         public ForTemClient(ForTemConfig config)
+            : this(new DefaultWebRequestSender(), config)
         {
-            _config = config;
+        }
+
+        internal ForTemClient(IWebRequestSender webRequestSender, ForTemConfig config)
+            //: base(webRequestSender, config?.Logger)
+        {
+            _config = Ensure.ArgumentNotNull(config);
+            _webRequestHelper = new WebRequestHelper(webRequestSender, config);
+            _authApi = new AuthApi(_webRequestHelper);
+
             _config.Logger.Log($"[ForTem] SDK initialized - Environment: {_config.Environment}");
-            _authApi = new AuthApi(this);
-            _userApi = new UserApi(this);
-            _collectionApi = new CollectionApi(this);
-            _itemApi = new ItemApi(this);
         }
 
         /// <summary>
-        /// Gets the User API for user management operations.
+        /// Retrieves ForTem user information based on a Sui wallet address.
+        /// Useful to verify whether a given wallet address belongs to a registered ForTem user.
         /// </summary>
-        public UserApi UserApi => _userApi;
-
-        /// <summary>
-        /// Gets the Collections API for game collections and items.
-        /// </summary>
-        public CollectionApi CollectionApi => _collectionApi;
-
-        /// <summary>
-        /// Gets the Collections API for game collections and items.
-        /// </summary>
-        public ItemApi ItemApi => _itemApi;
-
-        /// <summary>
-        /// Gets the Auth API for authentication operations.
-        /// </summary>
-        internal AuthApi Auth => _authApi;
-
-        /// <summary>
-        /// Internal: Gets the current configuration.
-        /// </summary>
-        internal ForTemConfig Config => _config;
-
-        internal async Task<string> Authenticate(bool forMinting)
+        public async Task<GetUserResponse> GetUser(string walletAddress)
         {
-            if (forMinting)
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
+
+            string endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/users/{walletAddress}";
+            using var request = UnityWebRequest.Get(endpoint);
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<GetUserResponse>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Retrieves the list of collections associated with the developer account.
+        /// </summary>
+        public async Task<List<CollectionResponse>> GetCollections()
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
+
+            var endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections";
+            using var request = UnityWebRequest.Get(endpoint);
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<List<CollectionResponse>>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Creates a new collection for grouping game items.
+        /// </summary>
+        /// <remarks>
+        /// Maximum 5 collections allowed per developer account.
+        /// </remarks>
+        public async Task<CollectionResponse> CreateCollection(CreateCollectionRequest requestBody)
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: true);
+
+            string bodyJson = JsonUtility.ToJson(requestBody);
+            bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
+            var endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections";
+            using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<CollectionResponse>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Retrieves item information based on its redeem code within a specific collection.
+        /// </summary>
+        public async Task<GetItemResponse> GetItem(int collectionId, string redeemCode)
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
+
+            string endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{redeemCode}";
+            using var request = UnityWebRequest.Get(endpoint);
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<GetItemResponse>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Creates a new item in a collection, with an image upload.
+        /// The <see cref="CreateItemRequest.RecipientAddress"/>  must belong to a ForTem user.
+        /// </summary>
+        public async Task<CreateItemResponse> CreateItemWithImage(
+            int collectionId,
+            CreateItemRequest item,
+            byte[] imageData,
+            string fileName)
+        {
+            if (imageData != null && imageData.Length > 0)
             {
-                string nonce = await Auth.GetNonce();
-                string accessToken = await Auth.GetAccessToken(nonce);
-                return accessToken;
+                var imageCid = await UploadImage(collectionId, imageData, fileName);
+                item.ItemImage = imageCid;
             }
 
-            await _semaphore.WaitAsync();
-            try
-            {
-                if (string.IsNullOrEmpty(_accessToken) || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >= _expiresAt - 30000)
-                {
-                    var nonce = await Auth.GetNonce();
-                    var accessToken = await Auth.GetAccessToken(nonce);
-                    _accessToken = accessToken;
-                    _expiresAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + 5 * 60 * 1000; // 5 minutes
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return await CreateItem(collectionId, item);
+        }
 
-            return _accessToken;
+        /// <summary>
+        /// Creates a new item in a collection.
+        /// The <see cref="CreateItemRequest.RecipientAddress"/>  must belong to a ForTem user.
+        /// </summary>
+        /// <remarks>
+        /// Custom images can be uploaded separately through the image-upload endpoint.
+        /// If you do not upload a custom image, the item will automatically display ForTem�s default item image.
+        /// </remarks>
+        public async Task<CreateItemResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: true);
+
+            string bodyJson = JsonUtility.ToJson(requestBody);
+            bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
+            string endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items";
+            using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<CreateItemResponse>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Upload an image for an item.
+        /// Returns an IPFS CID (Content Identifier) that can be referenced when creating the item.
+        /// All uploaded images are securely stored and managed on the IPFS server.
+        /// </summary>
+        /// <remarks>
+        /// Allowed types: image/jpeg, image/png, image/webp
+        /// </remarks>
+        private async Task<string> UploadImage(int collectionId, byte[] imageData, string fileName)
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
+
+            var extension = System.IO.Path.GetExtension(fileName).ToLower();
+            var contentType = extension switch
+            {
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".webp" => "image/webp",
+                _ => throw new ArgumentException("Unsupported image file type. Allowed types: .png, .jpg, .jpeg, .webp")
+            };
+
+            var formData = new List<IMultipartFormSection>();
+            formData.Add(new MultipartFormFileSection("file", imageData, fileName, contentType));
+            string endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/image-upload";
+            using var request = UnityWebRequest.Post(endpoint, formData);
+            request.method = "PUT";
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<ImageUploadResponse>(request);
+
+            return response.ItemImage;
         }
     }
 }

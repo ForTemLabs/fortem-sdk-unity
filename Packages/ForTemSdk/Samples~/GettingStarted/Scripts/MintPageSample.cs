@@ -99,7 +99,7 @@ namespace ForTemSdk.Samples
 
                 _busyOverlay.SetActive(true);
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var result = await forTemClient.ItemApi.CreateItemWithImage(_appContext.SelectedCollectionId, requestBody, imageData, fileName);
+                var result = await forTemClient.CreateItemWithImage(_appContext.SelectedCollectionId, requestBody, imageData, fileName);
                 Debug.Log($"Created item: {JsonUtility.ToJson(result, true)}");
 
                 selectedItem.MarkAsRedeemed();

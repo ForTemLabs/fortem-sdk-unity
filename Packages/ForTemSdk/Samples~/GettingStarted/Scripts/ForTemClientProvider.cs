@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -8,13 +9,12 @@ namespace ForTemSdk.Samples
         [SerializeField] private string _apiKey;
 
         private ForTemClient _forTemClient;
-        private bool _hasError;
 
-        public async ValueTask<ForTemClient> GetClient()
+        public async ValueTask<ForTemClient> GetClient(CancellationToken ct = default)
         {
-            while (_forTemClient == null && !_hasError)
+            while (_forTemClient == null && this != null)
             {
-                await Task.Delay(100);
+                await Task.Delay(100, ct);
             }
 
             return _forTemClient;
@@ -25,7 +25,6 @@ namespace ForTemSdk.Samples
             if (string.IsNullOrEmpty(_apiKey))
             {
                 Debug.LogError("Assign API key in the inspector");
-                _hasError = true;
                 return;
             }
 
@@ -56,7 +55,6 @@ namespace ForTemSdk.Samples
             catch (System.Exception ex)
             {
                 Debug.LogError($"Failed to fetch API key: {ex.Message}");
-                _hasError = true;
             }
         }
     }

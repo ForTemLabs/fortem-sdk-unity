@@ -39,7 +39,7 @@ namespace ForTemSdk.Samples
             {
                 _busyOverlay.SetActive(true);
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var result = await forTemClient.ItemApi.GetItem(_appContext.SelectedCollectionId, _redeemCodeInput.text);
+                var result = await forTemClient.GetItem(_appContext.SelectedCollectionId, _redeemCodeInput.text);
                 Debug.Log($"User: {JsonUtility.ToJson(result, true)}");
                 _itemDetailsUI.Bind(result);
             }

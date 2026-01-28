@@ -35,7 +35,7 @@ https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/ForTemSdk
 Login to https://testnet.fortem.gg or https://fortem.gg to get your API key.
 
 ```csharp
-using ForTem.SDK;
+using ForTemSdk;
 
 var config = new ForTemConfig(
     apiKey: "your-api-key",
@@ -46,18 +46,11 @@ var config = new ForTemConfig(
 var forTemClient = new ForTemClient(config);
 ```
 
-### 3. Get User Information
+### 2. Get User Information
 
 ```csharp
-try
-{
-    GetUserResponse user = await forTemClient.UserApi.GetUser(walletAddress: "0x...");
-    Debug.Log($"Collection: {JsonUtility.ToJson(user, true)}");
-}
-catch (ForTemApiException ex)
-{
-    Debug.LogError($"Failed to get user: {ex.Message}");
-}
+GetUserResponse user = await forTemClient.UserApi.GetUser(walletAddress: "0x...");
+Debug.Log($"Collection: {JsonUtility.ToJson(user, true)}");
 // Example response:
 // {
 //   "isUser": true,
@@ -67,22 +60,11 @@ catch (ForTemApiException ex)
 // }
 ```
 
-### 4. Browse Collections
+### 3. Browse Collections
 
 ```csharp
-try
-{
-    List<CollectionResponse> collections = await forTemClient.CollectionApi.GetCollections();
-    Debug.Log($"Found {collections.Count} collections");
-    foreach (var collection in collections)
-    {
-        Debug.Log($"Collection: {JsonUtility.ToJson(collection, true)}");
-    }
-}
-catch (ForTemApiException ex)
-{
-    Debug.LogError($"Failed to get collections: {ex.Message}");
-}
+List<CollectionResponse> collections = await forTemClient.CollectionApi.GetCollections();
+Debug.Log($"Collections: {JsonUtility.ToJson(collections, true)}");
 // Example response:
 // [{
 //     "id": 50,
