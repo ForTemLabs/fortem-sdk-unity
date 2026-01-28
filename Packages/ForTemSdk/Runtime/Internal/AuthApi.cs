@@ -11,23 +11,23 @@ namespace ForTemSdk
     /// <summary>
     /// Authentication API operations.
     /// </summary>
-    internal sealed class AuthApi// : ForTemApiBase
+    internal sealed class AuthApi
     {
         // Token management
         private string? _accessToken;
         private long _expiresAt;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-        private readonly ForTemClientHelper _helper;
+        private readonly WebRequestHelper _webRequestHelper;
 
-        public AuthApi(ForTemClientHelper helper)
+        public AuthApi(WebRequestHelper helper)
         {
-            _helper = helper;
+            _webRequestHelper = helper;
         }
 
-        internal async Task<string> Authenticate(bool forMinting)
+        internal async Task<string> Authenticate(bool isSingleUse)
         {
-            if (forMinting)
+            if (isSingleUse)
             {
                 string nonce = await GetNonce();
                 string accessToken = await GetAccessToken(nonce);
@@ -58,11 +58,11 @@ namespace ForTemSdk
         /// </summary>
         public async Task<string> GetNonce()
         {
-            var endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/auth/nonce";
+            var endpoint = $"{_webRequestHelper.Config.GetApiBaseUrl()}/api/v1/developers/auth/nonce";
             using var request = new UnityWebRequest(endpoint, "POST");
-            request.SetRequestHeader("x-api-key", _helper.Config.ApiKey);
+            request.SetRequestHeader("x-api-key", _webRequestHelper.Config.ApiKey);
             request.downloadHandler = new DownloadHandlerBuffer();
-            var response = await _helper.SendWebRequest<NonceResponse>(request);
+            var response = await _webRequestHelper.SendWebRequest<NonceResponse>(request);
 
             return response.Nonce;
         }
@@ -74,10 +74,10 @@ namespace ForTemSdk
         {
             var body = new AccessTokenRequest { Nonce = nonce };
             string bodyJson = JsonUtility.ToJson(body);
-            var endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/auth/access-token";
+            var endpoint = $"{_webRequestHelper.Config.GetApiBaseUrl()}/api/v1/developers/auth/access-token";
             using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
-            request.SetRequestHeader("x-api-key", _helper.Config.ApiKey);
-            var response = await _helper.SendWebRequest<AccessTokenResponse>(request);
+            request.SetRequestHeader("x-api-key", _webRequestHelper.Config.ApiKey);
+            var response = await _webRequestHelper.SendWebRequest<AccessTokenResponse>(request);
 
             return response.AccessToken;
         }

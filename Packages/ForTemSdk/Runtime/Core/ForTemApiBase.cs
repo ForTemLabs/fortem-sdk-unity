@@ -15,21 +15,17 @@ namespace ForTemSdk
     }
     internal interface IWebRequestSender
     {
-        //ForTemConfig Config { get; }
-        //Task<string> Authenticate(bool forMinting = false);
         Task<WebRequestResponse> Send(UnityWebRequest request);
     }
 
-    internal sealed class ForTemClientHelper
+    internal sealed class WebRequestHelper
     {
         private readonly IWebRequestSender _webRequestSender;
-        //private readonly AuthApi _authApi;
 
-        public ForTemClientHelper(IWebRequestSender webRequestSender, ForTemConfig config)
+        public WebRequestHelper(IWebRequestSender webRequestSender, ForTemConfig config)
         {
-            _webRequestSender = Ensure.ArgumentNotNull(webRequestSender);
-            //_authApi = authApi;
-            Config = Ensure.ArgumentNotNull(config);
+            _webRequestSender = webRequestSender;
+            Config = config;
         }
 
         public ForTemConfig Config { get; }
@@ -38,37 +34,35 @@ namespace ForTemSdk
         {
             Config.Logger.Log($"[ForTem] Requesting: {request.method} {request.url}");
 
-            await _webRequestSender.Send(request);
+            var response = await _webRequestSender.Send(request);
 
-            string responseBody = request.downloadHandler.text;
-
-            if (request.result != UnityWebRequest.Result.Success)
+            if (response.Result != UnityWebRequest.Result.Success)
             {
-                Throw(request, responseBody);
+                Throw(ref response);
             }
 
-            var response = ParseResponse<T>(responseBody);
+            var fortemResponse = ParseResponse<T>(response.Text);
 
-            Config.Logger.Log($"[ForTem] Response: {responseBody}");
+            Config.Logger.Log($"[ForTem] Response: {response.Text}");
 
-            return response;
+            return fortemResponse;
         }
 
-        private static Exception Throw(UnityWebRequest request, string responseBody)
+        private static Exception Throw(ref WebRequestResponse response)
         {
-            if (string.IsNullOrEmpty(responseBody))
+            if (string.IsNullOrEmpty(response.Text))
             {
-                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode})");
+                throw new HttpRequestException($"HTTP {response.Error} ({response.ResponseCode})");
             }
 
             try
             {
-                var error = JsonUtility.FromJson<ForTemError>(responseBody);
+                var error = JsonUtility.FromJson<ForTemError>(response.Text);
                 throw new ForTemApiException(error);
             }
             catch (Exception ex) when (ex is not ForTemApiException)
             {
-                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode}). Response: {responseBody}", ex);
+                throw new HttpRequestException($"HTTP {response.Error} ({response.ResponseCode}). Response: {response.Text}", ex);
             }
         }
 
@@ -105,50 +99,48 @@ namespace ForTemSdk
 
     internal abstract class ForTemApiBase
     {
-        protected readonly IWebRequestSender _webRequestSender;
-        protected readonly AuthApi _authApi;
+        private readonly IWebRequestSender _webRequestSender;
+        private readonly Logger _logger;
 
-        public ForTemApiBase(IWebRequestSender webRequestSender, AuthApi authApi)
+        internal ForTemApiBase(IWebRequestSender webRequestSender, Logger logger)
         {
             _webRequestSender = Ensure.ArgumentNotNull(webRequestSender);
-            _authApi = authApi;
+            _logger = Ensure.ArgumentNotNull(logger);
         }
 
         protected async Task<T> SendWebRequest<T>(UnityWebRequest request)
         {
-            //Config.Logger.Log($"[ForTem] Requesting: {request.method} {request.url}");
+            _logger.Log($"[ForTem] Requesting: {request.method} {request.url}");
 
-            await SendRequest(request);
+            var response = await _webRequestSender.Send(request);
 
-            string responseBody = request.downloadHandler.text;
-
-            if (request.result != UnityWebRequest.Result.Success)
+            if (response.Result != UnityWebRequest.Result.Success)
             {
-                Throw(request, responseBody);
+                Throw(ref response);
             }
 
-            var response = ParseResponse<T>(responseBody);
+            var fortemResponse = ParseResponse<T>(response.Text);
 
-            //Config.Logger.Log($"[ForTem] Response: {responseBody}");
+            _logger.Log($"[ForTem] Response: {response.Text}");
 
-            return response;
+            return fortemResponse;
         }
 
-        private static Exception Throw(UnityWebRequest request, string responseBody)
+        private static Exception Throw(ref WebRequestResponse response)
         {
-            if (string.IsNullOrEmpty(responseBody))
+            if (string.IsNullOrEmpty(response.Text))
             {
-                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode})");
+                throw new HttpRequestException($"HTTP {response.Error} ({response.ResponseCode})");
             }
 
             try
             {
-                var error = JsonUtility.FromJson<ForTemError>(responseBody);
+                var error = JsonUtility.FromJson<ForTemError>(response.Text);
                 throw new ForTemApiException(error);
             }
             catch (Exception ex) when (ex is not ForTemApiException)
             {
-                throw new HttpRequestException($"HTTP {request.error} ({request.responseCode}). Response: {responseBody}", ex);
+                throw new HttpRequestException($"HTTP {response.Error} ({response.ResponseCode}). Response: {response.Text}", ex);
             }
         }
 
@@ -180,14 +172,6 @@ namespace ForTemSdk
             }
 
             return apiResponse.data;
-        }
-
-        private Task SendRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-            operation.completed += _ => tcs.SetResult(true);
-            return tcs.Task;
         }
     }
 }

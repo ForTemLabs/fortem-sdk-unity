@@ -22,10 +22,10 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        private readonly ForTemClientHelper _helper;
+        private readonly WebRequestHelper _helper;
         private readonly AuthApi _authApi;
 
-        public ItemApi(ForTemClientHelper helper, AuthApi authApi)
+        public ItemApi(WebRequestHelper helper, AuthApi authApi)
             //: base(webRequestSender, authApi)
         {
             _helper = helper;
@@ -37,7 +37,7 @@ namespace ForTemSdk
         /// </summary>
         public async Task<GetItemResponse> GetItem(int collectionId, string redeemCode)
         {
-            var accessToken = await _authApi.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
 
             string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{redeemCode}";
             using var request = UnityWebRequest.Get(endpoint);
@@ -76,7 +76,7 @@ namespace ForTemSdk
         /// </remarks>
         public async Task<CreateItemResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
         {
-            var accessToken = await _authApi.Authenticate(forMinting: true);
+            var accessToken = await _authApi.Authenticate(isSingleUse: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
             bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
@@ -98,7 +98,7 @@ namespace ForTemSdk
         /// </remarks>
         private async Task<string> UploadImage(int collectionId, byte[] imageData, string fileName)
         {
-            var accessToken = await _authApi.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
 
             var extension = System.IO.Path.GetExtension(fileName).ToLower();
             var contentType = extension switch

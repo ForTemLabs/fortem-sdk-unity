@@ -27,7 +27,7 @@ namespace ForTemSdk.Samples
             {
                 _busyOverlay.SetActive(true);
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var result = await forTemClient.UserApi.GetUser(_walletAddressInput.text);
+                var result = await forTemClient.GetUser(_walletAddressInput.text);
                 Debug.Log($"User: {JsonUtility.ToJson(result, true)}");
                 _appContext.CurrentUser = result;
                 gameObject.SetActive(false);

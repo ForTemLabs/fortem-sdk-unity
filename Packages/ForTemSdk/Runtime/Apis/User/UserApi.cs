@@ -10,10 +10,10 @@ namespace ForTemSdk
     /// </summary>
     internal sealed class UserApi : /*ForTemApiBase,*/ IUserApi
     {
-        private readonly ForTemClientHelper _helper;
+        private readonly WebRequestHelper _helper;
         private readonly AuthApi _authApi;
 
-        public UserApi(ForTemClientHelper helper, AuthApi authApi)
+        public UserApi(WebRequestHelper helper, AuthApi authApi)
             //: base(webRequestSender, authApi)
         {
             _helper = helper;
@@ -26,7 +26,7 @@ namespace ForTemSdk
         /// </summary>
         public async Task<GetUserResponse> GetUser(string walletAddress)
         {
-            var accessToken = await _authApi.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
 
             string endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/users/{walletAddress}";
             using var request = UnityWebRequest.Get(endpoint);

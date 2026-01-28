@@ -52,7 +52,7 @@ namespace ForTemSdk.Samples
             {
                 _busyOverlay.SetActive(true);
                 var forTemClient = await _forTemClientProvider.GetClient();
-                var result = await forTemClient.CollectionApi.GetCollections();
+                var result = await forTemClient.GetCollections();
                 Debug.Log($"Found {result.Count} collections");
                 foreach (var collection in result)
                 {

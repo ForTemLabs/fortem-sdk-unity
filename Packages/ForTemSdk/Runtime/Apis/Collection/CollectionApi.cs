@@ -23,10 +23,10 @@ namespace ForTemSdk
             "\"[^\"]+\":\"\"[,]?",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        private readonly ForTemClientHelper _helper;
+        private readonly WebRequestHelper _helper;
         private readonly AuthApi _authApi;
 
-        public CollectionApi(ForTemClientHelper helper, AuthApi authApi)
+        public CollectionApi(WebRequestHelper helper, AuthApi authApi)
             //: base(webRequestSender, authApi)
         {
             _helper = helper;
@@ -38,7 +38,7 @@ namespace ForTemSdk
         /// </summary>
         public async Task<List<CollectionResponse>> GetCollections()
         {
-            var accessToken = await _authApi.Authenticate(forMinting: false);
+            var accessToken = await _authApi.Authenticate(isSingleUse: false);
 
             var endpoint = $"{_helper.Config.GetApiBaseUrl()}/api/v1/developers/collections";
             using var request = UnityWebRequest.Get(endpoint);
@@ -56,7 +56,7 @@ namespace ForTemSdk
         /// </remarks>
         public async Task<CollectionResponse> CreateCollection(CreateCollectionRequest requestBody)
         {
-            var accessToken = await _authApi.Authenticate(forMinting: true);
+            var accessToken = await _authApi.Authenticate(isSingleUse: true);
 
             string bodyJson = JsonUtility.ToJson(requestBody);
             bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
