@@ -16,6 +16,12 @@ This package is designed to be installed via Git URL.
 https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk
 ```
 
+If you want to control when this package updates in your project you can append a version to the end of the git url like `#v1.0.0`. For example:
+
+```
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk#1.0.0
+```
+
 ![unity-package-manager-git](https://private-user-images.githubusercontent.com/46207/294912794-7325d266-05b4-47c9-b06a-a67a40368dd2.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njk0OTI0MDIsIm5iZiI6MTc2OTQ5MjEwMiwicGF0aCI6Ii80NjIwNy8yOTQ5MTI3OTQtNzMyNWQyNjYtMDViNC00N2M5LWIwNmEtYTY3YTQwMzY4ZGQyLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAxMjclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMTI3VDA1MzUwMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTJkYTNiNDhkM2ZlNDRmNWUxNWUyMDdlZWFhMTRiYWU5Y2U2MjQ5NzBjZDk4YmZjNWUwYWE0OGU1NGYwZDA5ZDAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.W7t-6O0MZWsWkGXANlp4qeIRt6Yr-s4q7qyWObjteSQ)
 
 ## Key Features
