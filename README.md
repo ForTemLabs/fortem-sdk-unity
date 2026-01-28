@@ -2,7 +2,7 @@
 
 A C# wrapper around the ForTem backend Rest API to facilitate easy integration with Unity projects.
 
-Getting Started documentation can be found [here](Packages/ForTemSdk/Documentation~/README.md).
+Getting Started documentation can be found [here](Packages/com.fortem.fortem-sdk/Documentation~/README.md).
 
 Minimum supported Unity version: 2021.2
 
@@ -11,5 +11,5 @@ Minimum supported Unity version: 2021.2
 This package is designed to be installed via Git URL.
 
 ```
-https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/ForTemSdk
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk
 ```

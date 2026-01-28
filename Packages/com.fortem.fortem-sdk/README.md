@@ -11,5 +11,5 @@ Minimum supported Unity version: 2021.2
 This package is designed to be installed via Git URL.
 
 ```
-https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/ForTemSdk
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk
 ```

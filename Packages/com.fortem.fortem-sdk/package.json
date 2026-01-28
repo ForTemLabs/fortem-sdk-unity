@@ -28,6 +28,6 @@
       "path": "Samples~/GettingStarted"
     }
   ],
-  "documentationUrl": "https://github.com/ForTemLabs/fortem-sdk-unity/blob/main/Packages/ForTemSdk/Documentation~/README.md",
-  "changelogUrl": "https://github.com/ForTemLabs/fortem-sdk-unity/blob/main/Packages/ForTemSdk/CHANGELOG.md"
+  "documentationUrl": "https://github.com/ForTemLabs/fortem-sdk-unity/blob/main/Packages/com.fortem.fortem-sdk/Documentation~/README.md",
+  "changelogUrl": "https://github.com/ForTemLabs/fortem-sdk-unity/blob/main/Packages/com.fortem.fortem-sdk/CHANGELOG.md"
 }
