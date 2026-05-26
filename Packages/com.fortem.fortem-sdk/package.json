@@ -1,6 +1,6 @@
 {
   "name": "com.fortem.fortem-sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "displayName": "ForTem SDK",
   "description": "C# wrapper around the ForTem backend Rest API to facilitate easy integration with Unity projects.",
   "unity": "2021.2",
@@ -14,7 +14,8 @@
     "sdk",
     "utility",
     "tools",
-    "fortem"
+    "fortem",
+    "nft"
   ],
   "repository": {
     "type": "git",

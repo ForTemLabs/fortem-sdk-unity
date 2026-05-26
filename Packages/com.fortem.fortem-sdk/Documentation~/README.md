@@ -19,7 +19,7 @@ https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fort
 If you want to control when this package updates in your project you can append a version to the end of the git url like `#v1.0.0`. For example:
 
 ```
-https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk#v0.2.0
+https://github.com/ForTemLabs/fortem-sdk-unity.git?path=Packages/com.fortem.fortem-sdk#v0.3.0
 ```
 
 ![unity-package-manager-git](unity-package-manager-install.png)
