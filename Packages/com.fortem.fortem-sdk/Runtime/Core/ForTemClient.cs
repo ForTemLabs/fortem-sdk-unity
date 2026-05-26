@@ -133,7 +133,7 @@ namespace ForTemSdk
         /// </summary>
         /// <remarks>
         /// Custom images can be uploaded separately through the image-upload endpoint.
-        /// If you do not upload a custom image, the item will automatically display ForTem�s default item image.
+        /// If you do not upload a custom image, the item will automatically display ForTem's default item image.
         /// </remarks>
         public async Task<CreateItemResponse> CreateItem(int collectionId, CreateItemRequest requestBody)
         {
@@ -145,6 +145,23 @@ namespace ForTemSdk
             using var request = UnityWebRequestEx.Post(endpoint, bodyJson, "application/json");
             request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
             var response = await _webRequestHelper.SendWebRequest<CreateItemResponse>(request);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Updates an existing item in a collection. Only name, description, image, and attributes can be updated.
+        /// </summary>
+        public async Task<UpdateItemResponse> UpdateItem(int collectionId, string redeemCode, UpdateItemRequest requestBody)
+        {
+            var accessToken = await _authApi.Authenticate(isSingleUse: true);
+
+            string bodyJson = JsonUtility.ToJson(requestBody);
+            bodyJson = JsonRequestRegex.Replace(bodyJson, string.Empty).Replace(",}", "}");
+            string endpoint = $"{_config.GetApiBaseUrl()}/api/v1/developers/collections/{collectionId}/items/{redeemCode}";
+            using var request = UnityWebRequestEx.Put(endpoint, bodyJson, "application/json");
+            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+            var response = await _webRequestHelper.SendWebRequest<UpdateItemResponse>(request);
 
             return response;
         }

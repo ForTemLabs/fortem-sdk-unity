@@ -328,4 +328,82 @@ namespace ForTemSdk
         /// </summary>
         public string ItemImage => itemImage;
     }
+
+    /// <summary>
+    /// Request to update an item.
+    /// </summary>
+    [System.Serializable]
+    public sealed class UpdateItemRequest
+    {
+        [SerializeField] private string name;
+        [SerializeField] private string description;
+        [SerializeField] private string itemImage;
+        [SerializeField] private List<ItemAttribute> attributes;
+
+        /// <summary>
+        /// Name of the item (optional).
+        /// </summary>
+        /// <remarks>
+        /// Must be less than or equal to 40 characters.<br/>
+        /// Should not be an empty string.
+        /// </remarks>
+        public string Name { get => name; set => name = value; }
+
+        /// <summary>
+        /// Description of the item (optional).
+        /// </summary>
+        /// <remarks>
+        /// Should not be an empty string.<br/>
+        /// Must be less than or equal to 1000 characters.
+        /// </remarks>
+        public string Description { get => description; set => description = value; }
+
+        /// <summary>
+        /// CID value returned from image-upload endpoint (optional).
+        /// </summary>
+        public string ItemImage { get => itemImage; set => itemImage = value; }
+
+        /// <summary>
+        /// Custom attributes (optional).
+        /// </summary>
+        public List<ItemAttribute> Attributes { get => attributes; set => attributes = value; }
+    }
+
+    /// <summary>
+    /// Item update response.
+    /// </summary>
+    [Serializable]
+    public sealed class UpdateItemResponse
+    {
+        [SerializeField] private int itemId;
+        [SerializeField] private string name;
+        [SerializeField] private string description;
+        [SerializeField] private string itemImage;
+        [SerializeField] private List<ItemAttribute> attributes;
+
+        /// <summary>
+        /// Unique identifier for the updated item.
+        /// </summary>
+        public int ItemID => itemId;
+
+        /// <summary>
+        /// Name of the updated item.
+        /// </summary>
+        public string Name => name;
+
+        /// <summary>
+        /// Description of the updated item.
+        /// </summary>
+        public string Description => description;
+
+        /// <summary>
+        /// Image URL of the updated item.
+        /// </summary>
+        public string ItemImage => itemImage;
+
+        /// <summary>
+        /// Custom attributes of the created item.
+        /// </summary>
+        public List<ItemAttribute> Attributes => attributes;
+    }
 }

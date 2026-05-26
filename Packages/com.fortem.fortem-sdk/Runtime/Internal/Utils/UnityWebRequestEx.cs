@@ -24,6 +24,13 @@ namespace ForTemSdk
             return request;
         }
 
+        public static UnityWebRequest Put(string uri, string postData, string contentType)
+        {
+            UnityWebRequest request = new UnityWebRequest(uri, "PUT");
+            SetupPost(request, postData, contentType);
+            return request;
+        }
+
         private static void SetupPost(UnityWebRequest request, string postData, string contentType)
         {
             request.downloadHandler = new DownloadHandlerBuffer();
